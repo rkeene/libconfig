@@ -85,6 +85,16 @@ static int lc_process_var_short(void *data, const char *value) {
 	return(0);
 }
 
+static int lc_process_var_bool_byexistance(void *data, const char *value) {
+	int *dataval;
+
+	dataval = data;
+
+	*dataval = 1;
+
+	return(0);
+}
+
 static int lc_process_var_bool(void *data, const char *value) {
 	int *dataval;
 
@@ -211,6 +221,9 @@ static int lc_handle_type(lc_var_type_t type, const char *value, void *data) {
 			break;
 		case LC_VAR_SIZE_SHORT:
 			return(lc_process_var_sizeshort(data, value));
+			break;
+		case LC_VAR_BOOL_BY_EXISTANCE:
+			return(lc_process_var_bool_byexistance(data, value));
 			break;
 		case LC_VAR_TIME:
 		case LC_VAR_DATE:
@@ -366,7 +379,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 					continue;
 				}
 
-				if (handler->type == LC_VAR_NONE) {
+				if (handler->type == LC_VAR_NONE || handler->type == LC_VAR_BOOL_BY_EXISTANCE) {
 					cmdoptarg = NULL;
 				} else {
 					cmdargidx++;
@@ -410,7 +423,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 						continue;
 					}
 
-					if (handler->type == LC_VAR_NONE) {
+					if (handler->type == LC_VAR_NONE || handler->type == LC_VAR_BOOL_BY_EXISTANCE) {
 						cmdoptarg = NULL;
 					} else {
 						cmdargidx++;
@@ -497,6 +510,7 @@ int lc_process_var(const char *var, const char *varargs, const char *value, lc_f
 
 		if (value == NULL &&
 		    handler->type != LC_VAR_NONE &&
+		    handler->type != LC_VAR_BOOL_BY_EXISTANCE &&
 		    handler->type != LC_VAR_SECTION &&
 		    handler->type != LC_VAR_SECTIONSTART &&
 		    handler->type != LC_VAR_SECTIONEND) {

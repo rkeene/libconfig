@@ -15,8 +15,8 @@ typedef enum {
 __BLANK_LINE__
 
 typedef enum {
-        LC_VAR_UNKNOWN,
-        LC_VAR_NONE,
+        LC_VAR_UNKNOWN,			/* Requires no arguments. */
+        LC_VAR_NONE,			/* Requires no arguments. */
         LC_VAR_STRING,
         LC_VAR_LONG_LONG,
         LC_VAR_LONG,
@@ -33,7 +33,8 @@ typedef enum {
         LC_VAR_DATE,
         LC_VAR_SECTION,
         LC_VAR_SECTIONSTART,
-        LC_VAR_SECTIONEND
+        LC_VAR_SECTIONEND,
+	LC_VAR_BOOL_BY_EXISTANCE	/* Requires no arguments. */
 } lc_var_type_t;
 
 __BLANK_LINE__

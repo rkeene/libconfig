@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
 	int onoff = -1;
 	int lcpret = -1;
 	int i = 0;
+	int onoff2 = 0;
 	lc_err_t errs;
 
 	lc_register_var("Section", LC_VAR_SECTION, NULL, 0);
@@ -42,6 +43,7 @@ int main(int argc, char **argv) {
 	lc_register_var("Section.Test", LC_VAR_STRING, &joeval, 'j');
 	lc_register_var("bob", LC_VAR_SIZE_LONG_LONG, &xval, 's');
 	lc_register_var("Somesection.Free", LC_VAR_BOOL, &onoff, 0);
+	lc_register_var("long", LC_VAR_BOOL_BY_EXISTANCE, &onoff2, 'l');
 	lc_register_callback("sally", 0, LC_VAR_STRING, sally_cmd, NULL);
 	lc_register_callback("HELP", 'h', LC_VAR_NONE, help_cmd, NULL);
 	lc_register_callback("*.ifmodule", 0, LC_VAR_NONE, cmd_ifmodule, NULL);
@@ -58,6 +60,7 @@ int main(int argc, char **argv) {
 	}
 	PRINTERR("xval = %lli", xval);
 	PRINTERR("onoff = %i", onoff);
+	PRINTERR("long = %i", onoff2);
 	for (i = lc_optind; i < argc; i++) {
 		PRINTERR("argv[%i] = \"%s\"", i, argv[i]);
 	}
