@@ -80,10 +80,13 @@ LC_VAR_BOOL_BY_EXISTANCE
 This type of variable takes no arguments, it is set to true (1) by its existance in a configuration file, environment variable, or on the command line.  If it is not specified, the value of the data passed is not changed.  The data passed should be of type "int *".
 .TP
 LC_VAR_CIDR
-XXX: blah
+This type of variable accepts a CIDR format netmask and IP.  This is not yet implemented. (XXX)
 .TP
 LC_VAR_IP
-XXX: blah
+This type of variable accepts an IP address in decimal-dot format.  The value is stored in a uint32_t.
+.TP
+LC_VAR_ADDR
+This type of variable accepts an address in either host or decimal-dot format.  The value is stored in a uint32_t.  This is not yet implemented. (XXX)
 
 .SH "RETURN VALUE"
 On success 0 is returned, otherwise -1 is returned.

@@ -52,8 +52,6 @@ static int lc_process_var_string(void *data, const char *value) {
 }
 
 static int lc_process_var_cidr(void *data, const char *value) {
-	
-
 	return(0);
 }
 
@@ -281,6 +279,9 @@ static int lc_handle_type(lc_var_type_t type, const char *value, void *data) {
 			break;
 		case LC_VAR_IP:
 			return(lc_process_var_ip(data, value));
+			break;
+		case LC_VAR_CIDR:
+			return(lc_process_var_cidr(data, value));
 			break;
 		case LC_VAR_TIME:
 		case LC_VAR_DATE:
@@ -793,7 +794,9 @@ int lc_process_file(const char *appname, const char *pathname, lc_conf_type_t ty
 }
 
 static int lc_process_files(const char *appname, lc_conf_type_t type, const char *extraconfig) {
+#ifdef HAVE_GETPWUID
 	struct passwd *pwinfo = NULL;
+#endif
 	char configfiles[3][13][512] = {{{0}}};
 	char *configfile = NULL;
 	char *homedir = NULL;

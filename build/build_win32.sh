@@ -12,5 +12,5 @@ if [ ! -z "${CROSS}" ]; then
 fi
 export CFLAGS LDFLAGS CPPFLAGS
 make distclean
-./configure --host=${CROSS} && \
+./configure --host=${CROSS} --prefix=${HOME}/root/windows-i386/ --with-libopennet=${HOME}/root/windows-i386/ && \
 make || exit 1

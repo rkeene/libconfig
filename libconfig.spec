@@ -32,9 +32,11 @@ make install
 /usr/lib/libconfig.so.@@VERS@@
 /usr/lib/libconfig.so.0
 /usr/include/libconfig.h
-/usr/man/man3/lc_geterrno.3
-/usr/man/man3/lc_geterrstr.3
-/usr/man/man3/lc_process.3
 /usr/man/man3/lc_register_callback.3
 /usr/man/man3/lc_register_var.3
+/usr/man/man3/lc_process_file.3
+/usr/man/man3/lc_geterrstr.3
+/usr/man/man3/lc_geterrno.3
+/usr/man/man3/lc_process.3
+/usr/man/man3/lc_cleanup.3
 /usr/man/man3/libconfig.3

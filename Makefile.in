@@ -35,10 +35,10 @@ SHOBJS = libconfig_shr.o conf_space_shr.o conf_section_shr.o conf_apache_shr.o c
 
 all: $(LIBS) $(BINS)
 libconfig.$(SHOBJEXT): $(SHOBJS)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $?
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $^ $(LDFLAGS)
 
 libconfig.$(AREXT): $(OBJS)
-	$(AR) rcu $@ $?
+	$(AR) rcu $@ $^
 	-$(RANLIB) $@
 
 libconfig.o: libconfig.c compat.h win32.h config.h libconfig.h
@@ -51,12 +51,12 @@ libconfig_shr.o: libconfig.c compat.h win32.h config.h libconfig.h
 libconfig.h: libconfig.h.in
 	cat $? | $(CPP) $(CPPFLAGS) - | grep -v '^#' | grep -v '^ *$$' | sed 's/^!/#  /g;s/__BLANK_LINE__//' > $@
 
-test-lc: $(LIBS) test-lc.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c, $?) $(LDFLAGS) -Wl,-R -Wl,. -L. -lconfig
+test-lc$(EXEEXT): $(LIBS) test-lc.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c, $^) $(LDFLAGS) -Wl,-R -Wl,. -L. -lconfig
 
 .PHONY: clean distclean install
 clean:
-	rm -f *.o $(BINS) $(LIBS) libconfig.h *~ test-lc *.dll.a *.dll.def *.dll
+	rm -f *.o $(BINS) $(LIBS) libconfig.h *~ test-lc$(EXEEXT) *.dll.a *.dll.def *.dll
 distclean: clean
 	rm -f Makefile config.h config.status config.log lc_geterrno.3 lc_process.3 lc_cleanup.3 lc_process_file.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 libconfig.3
 
@@ -66,6 +66,8 @@ install: all libconfig.h
 	-$(INSTALL) -d $(mandir)/man3
 	-$(INSTALL) -d $(libdir)
 	-$(INSTALL) -d $(includedir)
+	-$(INSTALL) -m 644 libconfig.$(SHOBJEXT).def $(libdir)/libconfig.$(SHOBJEXT).def
+	-$(INSTALL) -m 644 libconfig.$(SHOBJEXT).a $(libdir)/libconfig.$(SHOBJEXT).a
 	$(INSTALL) -m 755 libconfig.$(SHOBJEXT) $(libdir)/libconfig.$(SHOBJEXT).$(PKGVERS)
 	$(INSTALL) -m 644 libconfig.$(AREXT) $(libdir)/libconfig.$(AREXT)
 	$(INSTALL) -m 644 lc_register_callback.3 $(mandir)/man3/lc_register_callback.3
