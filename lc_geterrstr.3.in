@@ -33,6 +33,9 @@ int main(int argc, char **argv) {
 
 	lc_p_ret = lc_process(argc, argv, "example", LC_CONF_APACHE,
 	                      NULL);
+
+	lc_cleanup();
+
 	if (lc_p_ret != 0) {
 		fprintf(stderr, "Error processing configuration: \\
 		        %s\\n", lc_geterrstr());

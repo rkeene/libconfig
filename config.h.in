@@ -12,7 +12,7 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if you have open_net from libopennet */
+/* Define to 1 if you have fopen_net from libopennet */
 #undef HAVE_LIBOPENNET
 
 /* Define to 1 if you have the <memory.h> header file. */

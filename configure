@@ -15671,9 +15671,9 @@ else
 # Not specified
     LIBSPECFLAGS=`pkg-config --libs libopennet 2>/dev/null`
     LIBSPECCFLAGS=`pkg-config --cflags libopennet 2>/dev/null`
-    echo "$as_me:$LINENO: checking for open_net in -lopennet" >&5
-echo $ECHO_N "checking for open_net in -lopennet... $ECHO_C" >&6
-if test "${ac_cv_lib_opennet_open_net+set}" = set; then
+    echo "$as_me:$LINENO: checking for fopen_net in -lopennet" >&5
+echo $ECHO_N "checking for fopen_net in -lopennet... $ECHO_C" >&6
+if test "${ac_cv_lib_opennet_fopen_net+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -15691,11 +15691,11 @@ extern "C"
 #endif
 /* We use char because int might match the return type of a gcc2
    builtin and then its argument prototype would still apply.  */
-char open_net ();
+char fopen_net ();
 int
 main ()
 {
-open_net ();
+fopen_net ();
   ;
   return 0;
 }
@@ -15722,20 +15722,20 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_opennet_open_net=yes
+  ac_cv_lib_opennet_fopen_net=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_opennet_open_net=no
+ac_cv_lib_opennet_fopen_net=no
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_opennet_open_net" >&5
-echo "${ECHO_T}$ac_cv_lib_opennet_open_net" >&6
-if test $ac_cv_lib_opennet_open_net = yes; then
+echo "$as_me:$LINENO: result: $ac_cv_lib_opennet_fopen_net" >&5
+echo "${ECHO_T}$ac_cv_lib_opennet_fopen_net" >&6
+if test $ac_cv_lib_opennet_fopen_net = yes; then
 
       OLDCPPFLAGS="$CPPFLAGS"
       OLDCFLAGS="$CFLAGS"
@@ -15914,9 +15914,9 @@ echo "$as_me: WARNING: Support for libopennet disabled" >&2;}
 			LIBSPECFLAGS="-L${LIBSPEC}/lib ${LIBSPECFLAGS}"
 			LIBSPECCFLAGS="-I${LIBSPEC}/include ${LIBSPECCFLAGS}"
   		fi
-		echo "$as_me:$LINENO: checking for open_net in -lopennet" >&5
-echo $ECHO_N "checking for open_net in -lopennet... $ECHO_C" >&6
-if test "${ac_cv_lib_opennet_open_net+set}" = set; then
+		echo "$as_me:$LINENO: checking for fopen_net in -lopennet" >&5
+echo $ECHO_N "checking for fopen_net in -lopennet... $ECHO_C" >&6
+if test "${ac_cv_lib_opennet_fopen_net+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -15934,11 +15934,11 @@ extern "C"
 #endif
 /* We use char because int might match the return type of a gcc2
    builtin and then its argument prototype would still apply.  */
-char open_net ();
+char fopen_net ();
 int
 main ()
 {
-open_net ();
+fopen_net ();
   ;
   return 0;
 }
@@ -15965,20 +15965,20 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_opennet_open_net=yes
+  ac_cv_lib_opennet_fopen_net=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_opennet_open_net=no
+ac_cv_lib_opennet_fopen_net=no
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_opennet_open_net" >&5
-echo "${ECHO_T}$ac_cv_lib_opennet_open_net" >&6
-if test $ac_cv_lib_opennet_open_net = yes; then
+echo "$as_me:$LINENO: result: $ac_cv_lib_opennet_fopen_net" >&5
+echo "${ECHO_T}$ac_cv_lib_opennet_fopen_net" >&6
+if test $ac_cv_lib_opennet_fopen_net = yes; then
 
 		  OLDCFLAGS="$CFLAGS"
 		  OLDCPPFLAGS="$CPPFLAGS"

@@ -11,6 +11,50 @@ lc_process \- Begin processing configuration files.
 The
 .BR lc_process (3)
 function begins processing of the command line arguments, environment variables, and command line options.
+The
+.I argc
+and
+.I argv
+parameters should be in the same format as passed to the
+.B main
+function of your program.
+The
+.I appname
+parameter should be a reasonable form of the name of the application.
+The
+.I type
+parameter should describe the format of the configuration file (see below).
+The
+.I extra
+parameter should list any extra configuration files to process.
+
+Valid type parameter values:
+.TP
+LC_CONF_SECTION
+This type of configuration file is similar to the Windows INI-file style.
+An example configuration file:
+.nf
+	[section]
+	variable = value
+.fi
+
+.TP
+LC_CONF_APACHE
+This type of configuration file is similar to the Apache configuration file.
+An example configuration file:
+.nf
+	<Section argument>
+		variable value
+	</Section>
+.fi
+
+.TP
+LC_CONF_SPACE
+This is a simple, flat configuration file.  It has no section headers.
+An example configuration file:
+.nf
+	variable value
+.fi
 
 .SH "RETURN VALUE"
 On success 0 is returned, otherwise -1 is returned.
@@ -35,6 +79,9 @@ int main(int argc, char **argv) {
 
 	lc_p_ret = lc_process(argc, argv, "example", LC_CONF_APACHE,
 	                      NULL);
+
+	lc_cleanup();
+
 	if (lc_p_ret != 0) {
 		fprintf(stderr, "Error processing configuration: \\
 		        %s\\n", lc_geterrstr());

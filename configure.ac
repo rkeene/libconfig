@@ -27,7 +27,7 @@ DC_DO_TYPE(int16_t, signed, 2)
 AC_REPLACE_FUNCS(strsep strtoll)
 AC_CHECK_FUNCS(getpwuid)
 
-DC_ASK_OPTLIB(opennet, open_net, opennet.h, [      Enable opennet support], libopennet, HAVE_LIBOPENNET, HAVE_OPENNET_H)
+DC_ASK_OPTLIB(opennet, fopen_net, opennet.h, [      Enable opennet support], libopennet, HAVE_LIBOPENNET, HAVE_OPENNET_H)
 
 dnl Checks for Win32 specific things.
 DC_DO_WIN32
