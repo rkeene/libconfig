@@ -1,0 +1,7 @@
+Primary Authors:
+  * Roy Keene <libconfig@rkeene.org>
+    Primary maintainer.
+
+People who have submitted patches:
+  * Mirko Buffoni <mirko.buffoni@synthesys.it>
+    Fixed installation issues and corrected mistakes in RPM spec file.

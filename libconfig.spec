@@ -26,6 +26,7 @@ make install
 %files
 %defattr(-,root,root)
 %doc README
+%doc AUTHORS
 /usr/lib/libconfig.a
 /usr/lib/libconfig.so
 /usr/lib/libconfig.so.@@VERS@@
