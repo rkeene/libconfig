@@ -30,6 +30,7 @@ make install
 /usr/lib/libconfig.so
 /usr/lib/libconfig.so.@@VERS@@
 /usr/lib/libconfig.so.0
+/usr/include/libconfig.h
 /usr/man/man3/lc_geterrno.3
 /usr/man/man3/lc_geterrstr.3
 /usr/man/man3/lc_process.3

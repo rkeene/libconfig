@@ -75,6 +75,7 @@ install: all libconfig.h
 	$(INSTALL) -m 644 lc_geterrno.3 $(mandir)/man3/lc_geterrno.3
 	$(INSTALL) -m 644 lc_process.3 $(mandir)/man3/lc_process.3
 	$(INSTALL) -m 644 lc_cleanup.3 $(mandir)/man3/lc_cleanup.3
+	$(INSTALL) -m 644 libconfig.3 $(mandir)/man3/libconfig.3
 	$(INSTALL) -m 644 libconfig.h $(includedir)/libconfig.h
 	-( cd $(libdir) && rm -f libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) )
 	-( cd $(libdir) && rm -f libconfig.$(SHOBJEXT) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT) )
