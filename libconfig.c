@@ -20,6 +20,22 @@
 #include <ctype.h>
 #endif
 
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
+#ifdef HAVE_PWD_H
+#include <pwd.h>
+#endif
+
 struct lc_varhandler_st *varhandlers = NULL;
 lc_err_t lc_errno = LC_ERR_NONE;
 
@@ -420,6 +436,15 @@ int lc_process_var(const char *var, const char *varargs, const char *value, lc_f
 			}
 		}
 
+		if (value == NULL &&
+		    handler->type != LC_VAR_NONE &&
+		    handler->type != LC_VAR_SECTION &&
+		    handler->type != LC_VAR_SECTIONSTART &&
+		    handler->type != LC_VAR_SECTIONEND) {
+			lc_errno = LC_ERR_BADFORMAT;
+			break;
+		}
+
 		return(lc_handle(handler, var, varargs, value, flags));
 	}
 
@@ -478,28 +503,27 @@ int lc_register_var(const char *var, lc_var_type_t type, void *data, char opt) {
 	return(0);
 }
 
-int lc_process(int argc, char **argv, const char *appname, lc_conf_type_t type, const char *extra) {
-	int retval = 0, chkretval = 0;
+static int lc_process_file(const char *appname, const char *pathname, lc_conf_type_t type) {
+	int chkretval = 0;
 
-	/* XXX Handle config files.  need to handle this in a loop of config files... */
 	switch (type) {
 		case LC_CONF_SECTION:
-			chkretval = lc_process_conf_section(appname, extra);
+			chkretval = lc_process_conf_section(appname, pathname);
 			break;
 		case LC_CONF_APACHE:
-			chkretval = lc_process_conf_apache(appname, extra);
+			chkretval = lc_process_conf_apache(appname, pathname);
 			break;
 		case LC_CONF_COLON:
-			chkretval = lc_process_conf_colon(appname, extra);
+			chkretval = lc_process_conf_colon(appname, pathname);
 			break;
 		case LC_CONF_EQUAL:
-			chkretval = lc_process_conf_equal(appname, extra);
+			chkretval = lc_process_conf_equal(appname, pathname);
 			break;
 		case LC_CONF_SPACE:
-			chkretval = lc_process_conf_space(appname, extra);
+			chkretval = lc_process_conf_space(appname, pathname);
 			break;
 		case LC_CONF_XML:
-			chkretval = lc_process_conf_xml(appname, extra);
+			chkretval = lc_process_conf_xml(appname, pathname);
 			break;
 		default:
 			chkretval = -1;
@@ -507,6 +531,74 @@ int lc_process(int argc, char **argv, const char *appname, lc_conf_type_t type, 
 			break;
 	}
 
+	return(chkretval);
+}
+
+static int lc_process_files(const char *appname, lc_conf_type_t type, const char *extraconfig) {
+	struct passwd *pwinfo = NULL;
+	char configfiles[3][13][512] = {{{0}}};
+	char *configfile = NULL;
+	char *homedir = NULL;
+	int configsetidx = 0, configidx = 0;
+	int chkretval = 0, retval = 0;
+
+	snprintf(configfiles[0][0], sizeof(**configfiles) - 1, "/etc/%s.cfg", appname);
+	snprintf(configfiles[0][1], sizeof(**configfiles) - 1, "/etc/%s.conf", appname);
+	snprintf(configfiles[0][2], sizeof(**configfiles) - 1, "/etc/%s/%s.cfg", appname, appname);
+	snprintf(configfiles[0][3], sizeof(**configfiles) - 1, "/etc/%s/%s.conf", appname, appname);
+	snprintf(configfiles[0][4], sizeof(**configfiles) - 1, "/usr/etc/%s.cfg", appname);
+	snprintf(configfiles[0][5], sizeof(**configfiles) - 1, "/usr/etc/%s.conf", appname);
+	snprintf(configfiles[0][6], sizeof(**configfiles) - 1, "/usr/etc/%s/%s.cfg", appname, appname);
+	snprintf(configfiles[0][7], sizeof(**configfiles) - 1, "/usr/etc/%s/%s.conf", appname, appname);
+	snprintf(configfiles[0][8], sizeof(**configfiles) - 1, "/usr/local/etc/%s.cfg", appname);
+	snprintf(configfiles[0][9], sizeof(**configfiles) - 1, "/usr/local/etc/%s.conf", appname);
+	snprintf(configfiles[0][10], sizeof(**configfiles) - 1, "/usr/local/etc/%s/%s.cfg", appname, appname);
+	snprintf(configfiles[0][11], sizeof(**configfiles) - 1, "/usr/local/etc/%s/%s.conf", appname, appname);
+	snprintf(configfiles[1][0], sizeof(**configfiles) - 1, "%s", extraconfig);
+	if (getuid() != 0) {
+		homedir = getenv("HOME");
+		if (homedir == NULL) {
+			pwinfo = getpwuid(getuid());
+			if (pwinfo != NULL) {
+				homedir = pwinfo->pw_dir;
+			}
+		}
+		if (homedir != NULL) {
+			if (strcmp(homedir, "/") != 0 && access(homedir, R_OK|W_OK|X_OK) == 0) {
+				snprintf(configfiles[2][0], sizeof(**configfiles) - 1, "%s/.%src", homedir, appname);
+				snprintf(configfiles[2][1], sizeof(**configfiles) - 1, "%s/.%s.cfg", homedir, appname);
+				snprintf(configfiles[2][2], sizeof(**configfiles) - 1, "%s/.%s.conf", homedir, appname);
+				snprintf(configfiles[2][3], sizeof(**configfiles) - 1, "%s/.%s/%s.cfg", homedir, appname, appname);
+				snprintf(configfiles[2][4], sizeof(**configfiles) - 1, "%s/.%s/%s.conf", homedir, appname, appname);
+				snprintf(configfiles[2][5], sizeof(**configfiles) - 1, "%s/.%s/config", homedir, appname);
+			}
+		}
+	}
+
+	for (configsetidx = 0; configsetidx < 3; configsetidx++) {
+		for (configidx = 0; configidx < 13; configidx++) {
+			configfile = configfiles[configsetidx][configidx];
+			if (configfile[0] == '\0') {
+				break;
+			}
+			if (access(configfile, R_OK) == 0) {
+				chkretval = lc_process_file(appname, configfile, type);
+				if (chkretval < 0) {
+					retval = -1;
+				}
+				break;
+			}
+		}
+	}
+
+	return(retval);
+}
+
+int lc_process(int argc, char **argv, const char *appname, lc_conf_type_t type, const char *extra) {
+	int retval = 0, chkretval = 0;
+
+	/* Handle config files. */
+	chkretval = lc_process_files(appname, type, extra);
 	if (chkretval < 0) {
 		retval = -1;
 	}
@@ -561,6 +653,9 @@ char *lc_geterrstr(void) {
 			break;
 		case LC_ERR_CALLBACK:
 			retval = "Error return from application handler.";
+			break;
+		case LC_ERR_ENOMEM:
+			retval = "Insuffcient memory.";
 			break;
 	}
 

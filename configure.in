@@ -1,5 +1,5 @@
 AC_REVISION($Revision $)
-AC_INIT(libconfig, 0.0.2)
+AC_INIT(libconfig, 0.0.3)
 AC_CONFIG_HEADER(config.h)
 
 dnl Checks for programs.
@@ -12,7 +12,7 @@ AC_AIX
 AC_CHECK_TOOL(AR, ar, true)
 AC_GNU_SOURCE
 
-AC_CHECK_HEADERS(ctype.h dirent.h libintl.h stdio.h stdlib.h string.h strings.h sys/stat.h sys/types.h unistd.h time.h sys/time.h)
+AC_CHECK_HEADERS(ctype.h dirent.h pwd.h stdio.h stdlib.h string.h sys/stat.h sys/time.h sys/types.h time.h unistd.h)
 AC_HEADER_TIME
 
 DC_DO_TYPE(uint64_t, unsigned, 8)
@@ -23,6 +23,7 @@ DC_DO_TYPE(uint16_t, unsigned, 2)
 DC_DO_TYPE(int16_t, signed, 2)
 
 AC_REPLACE_FUNCS(strsep)
+AC_CHECK_FUNCS(getpwuid)
 
 dnl Checks for Win32 specific things.
 DC_DO_WIN32

@@ -8,7 +8,7 @@ int help_cmd(const char *partarg, const char *arg, const char *argarg, const cha
 	exit(EXIT_FAILURE);
 }
 int sally_cmd(const char *partarg, const char *arg, const char *argarg, const char *val, lc_flags_t flags, void *extra) {
-	PRINTERR_D("%s sets value: \"%s\" (flags=%i)", arg, val, flags);
+	PRINTERR("%s sets value: \"%s\" (flags=%i)", arg, val, flags);
 	return(0);
 }
 
@@ -25,8 +25,7 @@ int cmd_ifmodule(const char *partarg, const char *arg, const char *argarg, const
 		return(LC_CBRET_ERROR);
 	}
 
-	SPOTVAR_S(arg);
-	SPOTVAR_S(argarg);
+	PRINTERR("IfModule (%s)", argarg);
 	return(LC_CBRET_IGNORESECTION);
 }
 
