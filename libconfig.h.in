@@ -41,6 +41,10 @@ typedef enum {
         LC_VAR_SIZE_SIZE_T,
 	LC_VAR_CIDR,
 	LC_VAR_IP,
+	LC_VAR_IP4,
+	LC_VAR_IP6,
+	LC_VAR_HOSTNAME4,
+	LC_VAR_HOSTNAME6,
 } lc_var_type_t;
 
 __BLANK_LINE__

@@ -55,10 +55,20 @@ static int lc_process_var_cidr(void *data, const char *value) {
 	return(0);
 }
 
-static int lc_process_var_ip(void *data, const char *value) {
-	uint32_t *dataval = NULL, retval = 0;
+static int lc_process_var_hostname6(void *data, const char *value) {
+}
+
+static int lc_process_var_hostname4(void *data, const char *value) {
+}
+
+static int lc_process_var_ip6(void *data, const char *value) {
+}
+
+static int lc_process_var_ip4(void *data, const char *value) {
+	uint32_t *dataval, retval = 0;
 	const char *dotptr = NULL;
 	int tmpval = -1;
+//	int dotcount
 
 	dataval = data;
 
@@ -278,7 +288,17 @@ static int lc_handle_type(lc_var_type_t type, const char *value, void *data) {
 			return(lc_process_var_sizesizet(data, value));
 			break;
 		case LC_VAR_IP:
-			return(lc_process_var_ip(data, value));
+		case LC_VAR_IP4:
+			return(lc_process_var_ip4(data, value));
+			break;
+		case LC_VAR_IP6:
+			return(lc_process_var_ip6(data, value));
+			break;
+		case LC_VAR_HOSTNAME4:
+			return(lc_process_var_hostname4(data, value));
+			break;
+		case LC_VAR_HOSTNAME6:
+			return(lc_process_var_hostname6(data, value));
 			break;
 		case LC_VAR_CIDR:
 			return(lc_process_var_cidr(data, value));

@@ -136,7 +136,6 @@ AC_DEFUN(DC_CHK_OS_INFO, [
 			CPPFLAGS="$CPPFLAGS -mms-bitfields"
 			SHOBJLDFLAGS='-shared -Wl,--enable-auto-image-base -Wl,--output-def,$[@].def,--out-implib,$[@].a'
 			;;
-
 	esac
 ])
 
