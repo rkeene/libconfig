@@ -1,0 +1,31 @@
+AC_REVISION($Revision $)
+AC_INIT(libconfig, 0.0.1)
+AC_CONFIG_HEADER(config.h)
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+AC_AIX
+AC_CHECK_TOOL(AR, ar, true)
+AC_CHECK_TOOL(RANLIB, ranlib, true)
+AC_GNU_SOURCE
+
+AC_CHECK_HEADERS(stdlib.h string.h unistd.h time.h sys/time.h getopt.h stdio.h ctype.h)
+AC_HEADER_TIME
+
+DC_DO_TYPE(uint64_t, unsigned, 8)
+DC_DO_TYPE(int64_t, signed, 8)
+DC_DO_TYPE(uint32_t, unsigned, 4)
+DC_DO_TYPE(int32_t, signed, 4)
+DC_DO_TYPE(uint16_t, unsigned, 2)
+DC_DO_TYPE(int16_t, signed, 2)
+
+AC_REPLACE_FUNCS(getopt strsep)
+
+dnl Checks for Win32 specific things.
+DC_DO_WIN32
+
+DC_GET_SHOBJFLAGS
+
+AC_OUTPUT(Makefile)

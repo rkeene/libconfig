@@ -1,0 +1,54 @@
+!ifndef _RSK_LIBCONFIG_H
+!define _RSK_LIBCONFIG_H
+
+__BLANK_LINE__
+
+typedef enum {
+        LC_CONF_SECTION,
+        LC_CONF_APACHE,
+        LC_CONF_COLON,
+        LC_CONF_EQUAL,
+        LC_CONF_SPACE,
+        LC_CONF_XML
+} lc_conf_type_t;
+
+__BLANK_LINE__
+
+typedef enum {
+        LC_VAR_UNKNOWN,
+        LC_VAR_NONE,
+        LC_VAR_STRING,
+        LC_VAR_LONG_LONG,
+        LC_VAR_LONG,
+        LC_VAR_INT,
+        LC_VAR_SHORT,
+        LC_VAR_BOOL,
+        LC_VAR_FILENAME,
+        LC_VAR_DIRECTORY,
+        LC_VAR_SIZE_LONG_LONG,
+        LC_VAR_SIZE_LONG,
+        LC_VAR_SIZE_INT,
+        LC_VAR_SIZE_SHORT,
+        LC_VAR_TIME,
+        LC_VAR_DATE,
+        LC_VAR_SECTIONSTART,
+        LC_VAR_SECTIONEND
+} lc_var_type_t;
+
+__BLANK_LINE__
+
+typedef enum {
+	LC_FLAGS_VAR,
+        LC_FLAGS_SECTIONSTART,
+        LC_FLAGS_SECTIONEND
+} lc_flags_t;
+
+__BLANK_LINE__
+
+int lc_process(int argc, char **argv, const char *appname, lc_conf_type_t type, const char *extra);
+int lc_register_callback(const char *var, int (*callback)(const char *, const char *, lc_flags_t));
+int lc_register_var(const char *var, lc_var_type_t type, void *data, char opt);
+
+__BLANK_LINE__
+
+!endif

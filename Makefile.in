@@ -1,0 +1,59 @@
+CC = @CC@
+AR = @AR@
+RANLIB = @RANLIB@
+CPP = @CPP@
+CFLAGS = -Wall @CFLAGS@ @DEFS@
+CPPFLAGS = @CPPFLAGS@ @DEFS@
+LDFLAGS = @LDFLAGS@ @LIBS@
+INSTALL = @INSTALL@
+EXEEXT = @EXEEXT@
+OBJEXT = @OBJEXT@
+PATH_SEPARATOR = @PATH_SEPARATOR@
+SHOBJFLAGS = @SHOBJFLAGS@
+SHOBJLDFLAGS = @SHOBJLDFLAGS@
+SHOBJEXT = so
+ARFLAGS = # @ARFLAGS@
+AREXT = a
+
+prefix = @prefix@
+mandir = @mandir@
+sysconfdir = @sysconfdir@
+datadir = @datadir@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+libdir = @libdir@
+includedir = @includedir@
+
+LIBS = libconfig.$(AREXT) libconfig.$(SHOBJEXT)
+BINS =
+OBJS = libconfig.o conf_space.o conf_section.o conf_apache.o conf_colon.o conf_equal.o conf_xml.o
+
+all: $(LIBS) $(BINS)
+libconfig.$(SHOBJEXT): $(OBJS) @LIBOBJS@
+	@echo $(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $(^:.o=.c); \
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $(^:.o=.c)
+
+libconfig.$(AREXT): $(OBJS) @LIBOBJS@
+	$(AR) rcu $@ $^
+	-$(RANLIB) $@
+
+libconfig.o: libconfig.c compat.h win32.h config.h libconfig.h
+
+libconfig.h: libconfig.h.in
+	cat $^ | $(CPP) $(CPPFLAGS) - | grep -v '^#' | grep -v '^ *$$' | sed 's/^!/#  /g;s/__BLANK_LINE__//' > $@
+
+test-lc: $(LIBS) test-lc.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -Wl,-R -Wl,. -L. -lconfig -o $@ $(filter %.c, $^)
+
+.PHONY: clean distclean install
+clean:
+	rm -f *.o $(BINS) $(LIBS) libconfig.h *~ test-lc
+distclean: clean
+	rm -f Makefile config.h config.status config.log
+
+install: all libconfig.h
+	-$(INSTALL) -d $(libdir)
+	-$(INSTALL) -d $(includedir)
+	$(INSTALL) -m 755 libconfig.$(SHOBJEXT) $(libdir)/libconfig.$(SHOBJEXT)
+	$(INSTALL) -m 644 libconfig.$(AREXT) $(libdir)/libconfig.$(AREXT)
+	$(INSTALL) -m 644 libconfig.h $(includedir)/libconfig.h

@@ -1,0 +1,9 @@
+#! /bin/sh
+
+if [ libconfig.h -nt libconfig.h.in ]; then
+	echo 'Updating libconfig.h.in ...'
+	sed 's@^#  @!@;s@^ *$@|__BLANK_LINE__|@' libconfig.h | tr '|' "\n" > libconfig.h.in
+else
+	echo 'Updating libconfig.h ...'
+	make libconfig.h
+fi

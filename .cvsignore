@@ -1,0 +1,10 @@
+libconfig.h
+config.log
+config.status
+config.h
+libconfig.a
+libconfig.so
+Makefile
+test-lc
+test.cfg
+.*.swp
