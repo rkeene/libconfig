@@ -40,6 +40,8 @@ struct lc_varhandler_st *varhandlers = NULL;
 lc_err_t lc_errno = LC_ERR_NONE;
 int lc_optind = 0;
 
+extern char **environ;
+
 static int lc_process_var_string(void *data, const char *value) {
 	char **dataval;
 
@@ -277,7 +279,121 @@ static int lc_handle(struct lc_varhandler_st *handler, const char *var, const ch
 }
 
 static int lc_process_environment(const char *appname) {
-	/* XXX: write this */
+	struct lc_varhandler_st *handler = NULL;
+	size_t appnamelen = 0;
+	char varnamebuf[128] = {0};
+	char **currvar;
+	char *sep = NULL, *value = NULL, *cmd = NULL;
+	char *ucase_appname = NULL, *ucase_appname_itr = NULL;
+	char *lastcomponent_handler = NULL;
+	int varnamelen = 0;
+
+	/* Make sure we have an environment to screw with, if not,
+	   no arguments were found to be in error */
+	if (environ == NULL || appname == NULL) {
+		return(0);
+	}
+
+	/* Allocate and create our uppercase appname. */
+	ucase_appname = strdup(appname);
+	if (ucase_appname == NULL) {
+		lc_errno = LC_ERR_ENOMEM;
+		return(-1);
+	}
+	for (ucase_appname_itr = ucase_appname; *ucase_appname_itr != '\0'; *ucase_appname_itr++) {
+		*ucase_appname_itr = toupper(*ucase_appname_itr);
+	}
+
+	appnamelen = strlen(ucase_appname);
+
+	for (currvar = environ; *currvar != NULL; *currvar++) {
+		/* If it doesn't begin with our appname ignore it completely. */
+		if (strncmp(*currvar, ucase_appname, appnamelen) != 0) {
+			continue;
+		}
+
+		/* Find our seperator. */
+		sep = strchr(*currvar, '=');
+		if (sep == NULL) {
+			continue;
+		}
+
+		varnamelen = sep - *currvar;
+
+		/* Skip variables that would overflow our buffer. */
+		if (varnamelen >= sizeof(varnamebuf)) {
+			continue;
+		}
+
+		strncpy(varnamebuf, *currvar, varnamelen);
+
+		varnamebuf[varnamelen] = '\0';
+		value = sep + 1;
+
+		/* We ignore APPNAME by itself. */
+		if (strlen(varnamebuf) <= appnamelen) {
+			continue;
+		}
+
+		/* Further it must be <APPNAME>_ */
+		if (varnamebuf[appnamelen] != '_') {
+			continue;
+		}
+
+		cmd = varnamebuf + appnamelen + 1;
+
+		/* We don't allow section specifiers, for reasons see notes in
+		   the cmdline processor (below). */
+		if (strchr(cmd, '.') != NULL) {
+			continue;
+		}
+
+		for (handler = varhandlers; handler != NULL; handler = handler->_next) {
+			if (handler->var == NULL) {
+				continue;
+			}
+
+			/* Skip handlers which don't agree with being
+			   processed outside a config file */
+			if (handler->type == LC_VAR_SECTION ||
+			    handler->type == LC_VAR_SECTIONSTART ||
+			    handler->type == LC_VAR_SECTIONEND ||
+			    handler->type == LC_VAR_UNKNOWN) {
+				continue;
+			}
+
+			/* Find the last part of the variable and compare it with 
+			   the option being processed, if a wildcard is given. */
+			if (handler->var[0] == '*' && handler->var[1] == '.') {
+				lastcomponent_handler = strrchr(handler->var, '.');
+				if (lastcomponent_handler == NULL) {
+					lastcomponent_handler = handler->var;
+				} else {
+					*lastcomponent_handler++;
+				}
+			} else {
+				lastcomponent_handler = handler->var;
+			}
+
+			/* Ignore this handler if they don't match. */
+			if (strcasecmp(lastcomponent_handler, cmd) != 0) {
+				continue;
+			}
+
+			if (handler->type == LC_VAR_NONE || handler->type == LC_VAR_BOOL_BY_EXISTANCE) {
+				value = NULL;
+			}
+
+			/* We ignore errors from the environment variables,
+			   they're mostly insignificant. */
+			lc_handle(handler, cmd, NULL, value, LC_FLAGS_ENVIRON);
+
+			break;
+		}
+	}
+
+	free(ucase_appname);
+
 	return(0);
 }
 
@@ -305,6 +421,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 	usedargv = malloc(argc * sizeof(*usedargv));
 	if (usedargv == NULL) {
 		lc_errno = LC_ERR_ENOMEM;
+		free(newargv);
 		return(-1);
 	}
 	for (cmdargidx = 0; cmdargidx < argc; cmdargidx++) {
@@ -386,6 +503,8 @@ static int lc_process_cmdline(int argc, char **argv) {
 					if (cmdargidx >= argc) {
 						PRINTERR("Argument required.");
 						lc_errno = LC_ERR_BADFORMAT;
+						free(usedargv);
+						free(newargv);
 						return(-1);
 					}
 					cmdoptarg = argv[cmdargidx];
@@ -404,6 +523,8 @@ static int lc_process_cmdline(int argc, char **argv) {
 			if (handler == NULL) {
 				PRINTERR("Unknown option: --%s", cmdarg);
 				lc_errno = LC_ERR_INVCMD;
+				free(usedargv);
+				free(newargv);
 				return(-1);
 			}
 		} else {
@@ -430,6 +551,8 @@ static int lc_process_cmdline(int argc, char **argv) {
 						if (cmdargidx >= argc) {
 							PRINTERR("Argument required.");
 							lc_errno = LC_ERR_BADFORMAT;
+							free(usedargv);
+							free(newargv);
 							return(-1);
 						}
 						cmdoptarg = argv[cmdargidx];
@@ -448,6 +571,8 @@ static int lc_process_cmdline(int argc, char **argv) {
 				if (handler == NULL) {
 					PRINTERR("Unknown option: -%c", ch);
 					lc_errno = LC_ERR_INVCMD;
+					free(usedargv);
+					free(newargv);
 					return(-1);
 				}
 			}
@@ -469,6 +594,9 @@ static int lc_process_cmdline(int argc, char **argv) {
 			argv[cmdargidx] = newargv[cmdargidx];
 		}
 	}
+
+	free(usedargv);
+	free(newargv);
 
 	return(retval);
 }
@@ -667,6 +795,25 @@ static int lc_process_files(const char *appname, lc_conf_type_t type, const char
 	return(retval);
 }
 
+static void lc_cleanup(void) {
+	struct lc_varhandler_st *handler = NULL, *next = NULL;
+
+	handler = varhandlers;
+	while (handler != NULL) {
+		if (handler->var != NULL) {
+			free(handler->var);
+		}
+
+		next = handler->_next;
+
+		free(handler);
+
+		handler = next;
+	}
+
+	return;
+}
+
 int lc_process(int argc, char **argv, const char *appname, lc_conf_type_t type, const char *extra) {
 	int retval = 0, chkretval = 0;
 
@@ -687,6 +834,9 @@ int lc_process(int argc, char **argv, const char *appname, lc_conf_type_t type, 
 	if (chkretval < 0) {
 		retval = -1;
 	}
+
+	/* Free our structures. */
+	lc_cleanup();
 
 	return(retval);
 }
