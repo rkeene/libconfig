@@ -42,6 +42,4 @@ AC_CHECK_FUNCS(getpwuid)
 dnl This MUST be last.
 DC_SYNC_SHLIBOBJS
 
-AC_CHECK_FUNCS(getpwuid)
-
 AC_OUTPUT(Makefile lc_geterrno.3 lc_process.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 lc_cleanup.3 lc_process_file.3 libconfig.3)
