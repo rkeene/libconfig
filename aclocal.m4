@@ -61,9 +61,17 @@ AC_DEFUN(DC_GET_SHOBJFLAGS, [
 
   DC_TEST_SHOBJFLAGS([-shared -fPIC], [-rdynamic], [
     DC_TEST_SHOBJFLAGS([-shared -fPIC], [], [
-      DC_TEST_SHOBJFLAGS([-shared -fPIC], [-rdynamic -Wl,-G,-z,textoff], [
-        DC_TEST_SHOBJFLAGS([-shared -fPIC], [-Wl,-G,-z,textoff], [
-          AC_MSG_ERROR(cant)
+      DC_TEST_SHOBJFLAGS([-shared -fPIC], [-rdynamic -mimpure-text], [
+        DC_TEST_SHOBJFLAGS([-shared -fPIC], [-mimpure-text], [
+          DC_TEST_SHOBJFLAGS([-shared -fPIC], [-rdynamic -Wl,-G,-z,textoff], [
+            DC_TEST_SHOBJFLAGS([-shared -fPIC], [-Wl,-G,-z,textoff], [
+              DC_TEST_SHOBJFLAGS([-shared -fPIC], [-dynamiclib -flat_namespace -undefined suppress -bind_at_load], [
+                DC_TEST_SHOBJFLAGS([-fPIC], [-dynamiclib -flat_namespace -undefined suppress -bind_at_load], [
+                  AC_MSG_ERROR(cant)
+                ])
+              ])
+            ])
+          ])
         ])
       ])
     ])
@@ -75,3 +83,26 @@ AC_DEFUN(DC_GET_SHOBJFLAGS, [
 
   AC_MSG_RESULT($SHOBJLDFLAGS $SHOBJFLAGS)
 ])
+
+
+AC_DEFUN(DC_CHK_OS_INFO, [
+	AC_CANONICAL_HOST
+	AC_SUBST(SHOBJEXT)
+	AC_SUBST(AREXT)
+
+        AC_MSG_CHECKING(host operating system)
+        AC_MSG_RESULT($host_os)
+
+	SHOBJEXT="so"
+	AREXT="a"
+
+        case $host_os in
+                darwin*)
+			SHOBJEXT="dylib"
+                        ;;
+		hpux*)
+			SHOBJEXT="sl"
+			;;
+	esac
+])
+

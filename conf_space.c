@@ -44,12 +44,12 @@ int lc_process_conf_space(const char *appname, const char *configfile) {
 		linebuf_ptr = &linebuf[strlen(linebuf) - 1];
 		while (*linebuf_ptr < ' ' && linebuf_ptr >= linebuf) {
 			*linebuf_ptr = '\0';
-			*linebuf_ptr--;
+			linebuf_ptr--;
 		}
 
 		linebuf_ptr = &linebuf[0];
 		while (*linebuf_ptr == ' ') {
-			*linebuf_ptr++;
+			linebuf_ptr++;
 		}
 
 		if (*linebuf_ptr == '#' || *linebuf_ptr == '\0') {
@@ -61,9 +61,9 @@ int lc_process_conf_space(const char *appname, const char *configfile) {
 		cmd = linebuf_ptr;
 		if (sep != NULL) {
 			*sep = '\0';
-			*sep++;
+			sep++;
 			while (*sep == ' ' || *sep == '\t') {
-				*sep++;
+				sep++;
 			}
 			value = sep;
 		} else {
@@ -75,10 +75,14 @@ int lc_process_conf_space(const char *appname, const char *configfile) {
 		lcpvret = lc_process_var(cmd, NULL, value, LC_FLAGS_VAR);
 		if (lcpvret < 0) {
 			if (lc_errno == LC_ERR_NONE) {
-				PRINTERR_D("Invalid command: \"%s\"", cmd);
+#ifdef DEBUG
+				fprintf(stderr, "Invalid command: \"%s\"\n", cmd);
+#endif
 				lc_errno = LC_ERR_INVCMD;
 			} else {
-				PRINTERR_D("Error processing command (command was valid, but an error occured, errno was set)");
+#ifdef DEBUG
+				fprintf(stderr, "Error processing command (command was valid, but an error occured, errno was set)\n");
+#endif
 			}
 			retval = -1;
 		} else {

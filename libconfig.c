@@ -231,7 +231,9 @@ static int lc_handle_type(lc_var_type_t type, const char *value, void *data) {
 		case LC_VAR_DATE:
 		case LC_VAR_FILENAME:
 		case LC_VAR_DIRECTORY:
-			PRINTERR_D("Not implemented yet!");
+#ifdef DEBUG
+			fprintf(stderr, "Not implemented yet!\n");
+#endif
 			return(-1);
 		case LC_VAR_NONE:
 		case LC_VAR_UNKNOWN:
@@ -254,7 +256,7 @@ static int lc_handle(struct lc_varhandler_st *handler, const char *var, const ch
 		if (localvar == NULL) {
 			localvar = var;
 		} else {
-			*localvar++;
+			localvar++;
 		}
 	} else {
 		localvar = NULL;
@@ -300,13 +302,13 @@ static int lc_process_environment(const char *appname) {
 		lc_errno = LC_ERR_ENOMEM;
 		return(-1);
 	}
-	for (ucase_appname_itr = ucase_appname; *ucase_appname_itr != '\0'; *ucase_appname_itr++) {
+	for (ucase_appname_itr = ucase_appname; *ucase_appname_itr != '\0'; ucase_appname_itr++) {
 		*ucase_appname_itr = toupper(*ucase_appname_itr);
 	}
 
 	appnamelen = strlen(ucase_appname);
 
-	for (currvar = environ; *currvar != NULL; *currvar++) {
+	for (currvar = environ; *currvar != NULL; currvar++) {
 		/* If it doesn't begin with our appname ignore it completely. */
 		if (strncmp(*currvar, ucase_appname, appnamelen) != 0) {
 			continue;
@@ -369,7 +371,7 @@ static int lc_process_environment(const char *appname) {
 				if (lastcomponent_handler == NULL) {
 					lastcomponent_handler = handler->var;
 				} else {
-					*lastcomponent_handler++;
+					lastcomponent_handler++;
 				}
 			} else {
 				lastcomponent_handler = handler->var;
@@ -446,11 +448,11 @@ static int lc_process_cmdline(int argc, char **argv) {
 		usedargv[cmdargidx] = 1;
 
 		/* Then shift the argument past the '-' so we can ignore it. */
-		*cmdarg++;
+		cmdarg++;
 
 		/* Handle long options. */
 		if (cmdarg[0] == '-') {
-			*cmdarg++;
+			cmdarg++;
 
 			/* Don't process arguments after the '--' option. */
 			if (cmdarg[0] == '\0') {
@@ -479,7 +481,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 					if (lastcomponent_handler == NULL) {
 						lastcomponent_handler = handler->var;
 					} else {
-						*lastcomponent_handler++;
+						lastcomponent_handler++;
 					}
 				} else {
 					/* Disallow use of the fully qualified name
@@ -501,7 +503,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 				} else {
 					cmdargidx++;
 					if (cmdargidx >= argc) {
-						PRINTERR("Argument required.");
+						fprintf(stderr, "Argument required.\n");
 						lc_errno = LC_ERR_BADFORMAT;
 						free(usedargv);
 						free(newargv);
@@ -521,14 +523,14 @@ static int lc_process_cmdline(int argc, char **argv) {
 			}
 
 			if (handler == NULL) {
-				PRINTERR("Unknown option: --%s", cmdarg);
+				fprintf(stderr, "Unknown option: --%s\n", cmdarg);
 				lc_errno = LC_ERR_INVCMD;
 				free(usedargv);
 				free(newargv);
 				return(-1);
 			}
 		} else {
-			for (; *cmdarg != '\0'; *cmdarg++) {
+			for (; *cmdarg != '\0'; cmdarg++) {
 				ch = *cmdarg;
 
 				for (handler = varhandlers; handler != NULL; handler = handler->_next) {
@@ -549,7 +551,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 					} else {
 						cmdargidx++;
 						if (cmdargidx >= argc) {
-							PRINTERR("Argument required.");
+							fprintf(stderr, "Argument required.\n");
 							lc_errno = LC_ERR_BADFORMAT;
 							free(usedargv);
 							free(newargv);
@@ -569,7 +571,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 				}
 
 				if (handler == NULL) {
-					PRINTERR("Unknown option: -%c", ch);
+					fprintf(stderr, "Unknown option: -%c\n", ch);
 					lc_errno = LC_ERR_INVCMD;
 					free(usedargv);
 					free(newargv);
@@ -610,7 +612,7 @@ int lc_process_var(const char *var, const char *varargs, const char *value, lc_f
 	if (lastcomponent_var == NULL) {
 		lastcomponent_var = var;
 	} else {
-		*lastcomponent_var++;
+		lastcomponent_var++;
 	}
 
 	for (handler = varhandlers; handler != NULL; handler = handler->_next) {

@@ -122,31 +122,31 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 		linebuf_ptr = &linebuf[strlen(linebuf) - 1];
 		while (*linebuf_ptr < ' ' && linebuf_ptr >= linebuf) {
 			*linebuf_ptr = '\0';
-			*linebuf_ptr--;
+			linebuf_ptr--;
 		}
 
 		/* Remove leading spaces. */
 		linebuf_ptr = &linebuf[0];
 		while (*linebuf_ptr == ' ' || *linebuf_ptr == '\t') {
-			*linebuf_ptr++;
+			linebuf_ptr++;
 		}
 
 		/* Handle section header. */
 		if (linebuf_ptr[0] == '<' && linebuf_ptr[strlen(linebuf_ptr) - 1] == '>') {
 			/* Remove < and > from around the data. */
 			linebuf_ptr[strlen(linebuf_ptr) - 1] = '\0';
-			*linebuf_ptr++;
+			linebuf_ptr++;
 
 			/* Lowercase the command part of the section. */
 			tmp_ptr = linebuf_ptr;
 			while (*tmp_ptr != '\0' && *tmp_ptr != ' ') {
 				*tmp_ptr = tolower(*tmp_ptr);
-				*tmp_ptr++;
+				tmp_ptr++;
 			}
 
 			/* If this is a close section command, handle it */
 			if (linebuf_ptr[0] == '/') {
-				*linebuf_ptr++;
+				linebuf_ptr++;
 				cmd = linebuf_ptr; 
 
 				/* Find the last section closed. */
@@ -159,8 +159,10 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 				}
 
 				if (strcmp(cmd, lastsection) != 0) {
-					PRINTERR_D("Section closing does not match last opened section.");
-					PRINTERR_D("Last opened = \"%s\", Closing = \"%s\"", lastsection, cmd);
+#ifdef DEBUG
+					fprintf(stderr, "Section closing does not match last opened section.\n");
+					fprintf(stderr, "Last opened = \"%s\", Closing = \"%s\"\n", lastsection, cmd);
+#endif
 					retval = -1;
 					lc_errno = LC_ERR_BADFORMAT;
 
@@ -170,7 +172,9 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 
 				lcpvret = lc_process_var(qualifbuf, NULL, NULL, LC_FLAGS_SECTIONEND);
 				if (lcpvret < 0) {
-					PRINTERR_D("Invalid section terminating: \"%s\"", qualifbuf);
+#ifdef DEBUG
+					fprintf(stderr, "Invalid section terminating: \"%s\"\n", qualifbuf);
+#endif
 				}
 
 				/* Remove the "lastsection" part.. */
@@ -197,17 +201,17 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 			if (sep != NULL) {
 				cmdend = sep;
 				/* Delete space at the end of the command. */
-				*cmdend--; /* It currently derefs to the seperator.. */
+				cmdend--; /* It currently derefs to the seperator.. */
 				while (*cmdend <= ' ') {
 					*cmdend = '\0';
-					*cmdend--;
+					cmdend--;
 				}
 
 				/* Delete the seperator char and any leading space. */
 				*sep = '\0';
-				*sep++;
+				sep++;
 				while (*sep == ' ' || *sep == '\t') {
-					*sep++;
+					sep++;
 				}
 				value = sep;
 			} else {
@@ -224,7 +228,9 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 
 			lcpvret = lc_process_var(qualifbuf, value, NULL, LC_FLAGS_SECTIONSTART);
 			if (lcpvret < 0) {
-				PRINTERR_D("Invalid section: \"%s\"", qualifbuf);
+#ifdef DEBUG
+				fprintf(stderr, "Invalid section: \"%s\"\n", qualifbuf);
+#endif
 				invalid_section = 1;
 				lc_errno = LC_ERR_INVSECTION;
 				retval = -1;
@@ -242,11 +248,15 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 
 		/* Don't handle things for a section that doesn't exist. */
 		if (invalid_section == 1) {
-			PRINTERR_D("Ignoring line (because invalid section): %s", linebuf);
+#ifdef DEBUG
+			fprintf(stderr, "Ignoring line (because invalid section): %s\n", linebuf);
+#endif
 			continue;
 		}
 		if (ignore_section == 1) {
-			PRINTERR_D("Ignoring line (because ignored section): %s", linebuf);
+#ifdef DEBUG
+			fprintf(stderr, "Ignoring line (because ignored section): %s\n", linebuf);
+#endif
 			continue;
 		}
 
@@ -256,17 +266,17 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 			cmdend = sep;
 
 			/* Delete space at the end of the command. */
-			*cmdend--; /* It currently derefs to the seperator.. */
+			cmdend--; /* It currently derefs to the seperator.. */
 			while (*cmdend <= ' ') {
 				*cmdend = '\0';
-				*cmdend--;
+				cmdend--;
 			}
 
 			/* Delete the seperator char and any leading space. */
 			*sep = '\0';
-			*sep++;
+			sep++;
 			while (*sep == ' ' || *sep == '\t') {
-				*sep++;
+				sep++;
 			}
 			value = sep;
 		} else {
@@ -280,13 +290,17 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 			if (value == NULL) {
 				lc_errno = LC_ERR_BADFORMAT;
 				retval = -1;
-				PRINTERR_D("Invalid include command.");
+#ifdef DEBUG
+				fprintf(stderr, "Invalid include command.\n");
+#endif
 				continue;
 			}
 
 			lpcafret = lc_process_conf_apache_include(value, qualifbuf);
 			if (lpcafret < 0) {
-				PRINTERR_D("Error in included file.");
+#ifdef DEBUG
+				fprintf(stderr, "Error in included file.\n");
+#endif
 				retval = -1;
 			}
 			continue;
@@ -304,10 +318,14 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 		lcpvret = lc_process_var(qualifbuf, NULL, value, LC_FLAGS_VAR);
 		if (lcpvret < 0) {
 			if (lc_errno == LC_ERR_NONE) {
-				PRINTERR_D("Invalid command: \"%s\"", cmd);
+#ifdef DEBUG
+				fprintf(stderr, "Invalid command: \"%s\"\n", cmd);
+#endif
 				lc_errno = LC_ERR_INVCMD;
 			} else {
-				PRINTERR_D("Error processing command (command was valid, but an error occured, errno was set)");
+#ifdef DEBUG
+				fprintf(stderr, "Error processing command (command was valid, but an error occured, errno was set)\n");
+#endif
 			}
 			retval = -1;
 		} else {

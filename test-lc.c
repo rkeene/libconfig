@@ -8,7 +8,7 @@ int help_cmd(const char *partarg, const char *arg, const char *argarg, const cha
 	exit(EXIT_FAILURE);
 }
 int sally_cmd(const char *partarg, const char *arg, const char *argarg, const char *val, lc_flags_t flags, void *extra) {
-	PRINTERR("%s sets value: \"%s\" (flags=%i)", arg, val, flags);
+	fprintf(stderr, "%s sets value: \"%s\" (flags=%i)\n", arg, val, flags);
 	return(0);
 }
 
@@ -17,15 +17,15 @@ int cmd_ifmodule(const char *partarg, const char *arg, const char *argarg, const
 		return(LC_CBRET_OKAY);
 	}
 	if (flags != LC_FLAGS_SECTIONSTART) {
-		PRINTERR("IfModule can only be used as a section.");
+		fprintf(stderr, "IfModule can only be used as a section.\n");
 		return(LC_CBRET_ERROR);
 	}
 	if (argarg == NULL) {
-		PRINTERR("You must specify an argument to IfModule.");
+		fprintf(stderr, "You must specify an argument to IfModule.\n");
 		return(LC_CBRET_ERROR);
 	}
 
-	PRINTERR("IfModule (%s)", argarg);
+	fprintf(stderr, "IfModule (%s)\n", argarg);
 	return(LC_CBRET_IGNORESECTION);
 }
 
@@ -49,20 +49,20 @@ int main(int argc, char **argv) {
 	lc_register_callback("*.ifmodule", 0, LC_VAR_NONE, cmd_ifmodule, NULL);
 	lcpret = lc_process(argc, argv, "testapp", LC_CONF_APACHE, "test.cfg");
 	if (lcpret < 0) {
-		PRINTERR("Error processing config file: %s", lc_geterrstr());
+		fprintf(stderr, "Error processing config file: %s\n", lc_geterrstr());
 		return(EXIT_FAILURE);
 	}
 
 	if (joeval != NULL) {
-		PRINTERR("joeval = \"%s\"", joeval);
+		fprintf(stderr, "joeval = \"%s\"\n", joeval);
 	} else {
-		PRINTERR("joeval = \"(null)\"");
+		fprintf(stderr, "joeval = \"(null)\"\n");
 	}
-	PRINTERR("xval = %lli", xval);
-	PRINTERR("onoff = %i", onoff);
-	PRINTERR("long = %i", onoff2);
+	fprintf(stderr, "xval = %lli\n", xval);
+	fprintf(stderr, "onoff = %i\n", onoff);
+	fprintf(stderr, "long = %i\n", onoff2);
 	for (i = lc_optind; i < argc; i++) {
-		PRINTERR("argv[%i] = \"%s\"", i, argv[i]);
+		fprintf(stderr, "argv[%i] = \"%s\"\n", i, argv[i]);
 	}
 
 	return(0);

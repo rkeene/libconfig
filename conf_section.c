@@ -48,7 +48,7 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 		linebuf_ptr = &linebuf[strlen(linebuf) - 1];
 		while (*linebuf_ptr < ' ' && linebuf_ptr >= linebuf) {
 			*linebuf_ptr = '\0';
-			*linebuf_ptr--;
+			linebuf_ptr--;
 		}
 
 		/* Handle section header. */
@@ -60,7 +60,9 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 			if (currsection != NULL) {
 				lcpvret = lc_process_var(currsection, NULL, NULL, LC_FLAGS_SECTIONEND);
 				if (lcpvret < 0) {
-					PRINTERR_D("Invalid section terminating: \"%s\"", currsection);
+#ifdef DEBUG
+					fprintf(stderr, "Invalid section terminating: \"%s\"\n", currsection);
+#endif
 				}
 				free(currsection);
 			}
@@ -69,7 +71,9 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 			currsection = strdup(linebuf_ptr);
 			lcpvret = lc_process_var(currsection, NULL, NULL, LC_FLAGS_SECTIONSTART);
 			if (lcpvret < 0) {
-				PRINTERR_D("Invalid section: \"%s\"", currsection);
+#ifdef DEBUG
+				fprintf(stderr, "Invalid section: \"%s\"\n", currsection);
+#endif
 				invalid_section = 1;
 				lc_errno = LC_ERR_INVSECTION;
 				retval = -1;
@@ -87,7 +91,7 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 		/* Remove leading spaces. */
 		linebuf_ptr = &linebuf[0];
 		while (*linebuf_ptr == ' ') {
-			*linebuf_ptr++;
+			linebuf_ptr++;
 		}
 
 		/* Drop comments and blank lines. */
@@ -97,37 +101,43 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 
 		/* Don't handle things for a section that doesn't exist. */
 		if (invalid_section == 1) {
-			PRINTERR_D("Ignoring line (because invalid section): %s", linebuf);
+#ifdef DEBUG
+			fprintf(stderr, "Ignoring line (because invalid section): %s\n", linebuf);
+#endif
 			continue;
 		}
 
 		/* Don't process commands if this section is specifically ignored. */
 		if (ignore_section == 1) {
-			PRINTERR_D("Ignoring line (because ignored section): %s", linebuf);
+#ifdef DEBUG
+			fprintf(stderr, "Ignoring line (because ignored section): %s\n", linebuf);
+#endif
 			continue;
 		}
 
 		/* Find the command and the data in the line. */
 		cmdend = sep = strpbrk(linebuf_ptr, "=");
 		if (sep == NULL) {
-			PRINTERR_D("Invalid line: \"%s\"", linebuf);
+#ifdef DEBUG
+			fprintf(stderr, "Invalid line: \"%s\"\n", linebuf);
+#endif
 			continue;
 		}
 
 		/* Delete space at the end of the command. */
-		*cmdend--; /* It currently derefs to the seperator.. */
+		cmdend--; /* It currently derefs to the seperator.. */
 		while (*cmdend <= ' ') {
 			*cmdend = '\0';
-			*cmdend--;
+			cmdend--;
 		}
 
 		cmd = linebuf_ptr;
 
 		/* Delete the seperator char and any leading space. */
 		*sep = '\0';
-		*sep++;
+		sep++;
 		while (*sep == ' ' || *sep == '\t') {
-			*sep++;
+			sep++;
 		}
 		value = sep;
 
@@ -144,10 +154,14 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 		lcpvret = lc_process_var(qualifbuf, NULL, value, LC_FLAGS_VAR);
 		if (lcpvret < 0) {
 			if (lc_errno == LC_ERR_NONE) {
-				PRINTERR_D("Invalid command: \"%s\"", cmd);
+#ifdef DEBUG
+				fprintf(stderr, "Invalid command: \"%s\"\n", cmd);
+#endif
 				lc_errno = LC_ERR_INVCMD;
 			} else {
-				PRINTERR_D("Error processing command (command was valid, but an error occured, errno was set)");
+#ifdef DEBUG
+				fprintf(stderr, "Error processing command (command was valid, but an error occured, errno was set)\n");
+#endif
 			}
 			retval = -1;
 		} else {
@@ -159,7 +173,9 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 	if (currsection != NULL) {
 		lcpvret = lc_process_var(currsection, NULL, NULL, LC_FLAGS_SECTIONEND);
 		if (lcpvret < 0) {
-			PRINTERR_D("Invalid section terminating: \"%s\"", currsection);
+#ifdef DEBUG
+			fprintf(stderr, "Invalid section terminating: \"%s\"\n", currsection);
+#endif
 		}
 		free(currsection);
 	}
