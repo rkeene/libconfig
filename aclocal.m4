@@ -33,68 +33,39 @@ AC_DEFUN(DC_DO_TYPE, [
 	done
 ])
 
-AC_DEFUN(DC_GET_SHOBJFLAGS, [
+dnl Usage:
+dnl    DC_TEST_SHOBJFLAGS(shobjflags, shobjldflags, action-if-not-found)
+dnl
+AC_DEFUN(DC_TEST_SHOBJFLAGS, [
   AC_SUBST(SHOBJFLAGS)
   AC_SUBST(SHOBJLDFLAGS)
 
-  AC_MSG_CHECKING(how to create shared objects)
   OLD_LDFLAGS="$LDFLAGS"
   SHOBJFLAGS=""
-  if test -z "$SHOBJFLAGS"; then
-    LDFLAGS="$OLD_LDFLAGS -shared -Wl,-G,-z,textoff -rdynamic -fPIC"
-    AC_TRY_LINK([#include <stdio.h>
-int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS="-shared -Wl,-G,-z,textoff -fPIC"; SHOBJLDFLAGS="-rdynamic" ], SHOBJFLAGS="", SHOBJFLAGS="");
-  fi
-  if test -z "$SHOBJFLAGS"; then
-    LDFLAGS="$OLD_LDFLAGS -shared -Wl,-G,-z,textoff -rdynamic"
-    AC_TRY_LINK([#include <stdio.h>
-int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS="-shared -Wl,-G,-z,textoff"; SHOBJLDFLAGS="-rdynamic" ], SHOBJFLAGS="", SHOBJFLAGS="");
-  fi
-  if test -z "$SHOBJFLAGS"; then
-    LDFLAGS="$OLD_LDFLAGS -shared -Wl,-G,-z,textoff -fPIC"
-    AC_TRY_LINK([#include <stdio.h>
-int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS="-shared -Wl,-G,-z,textoff -fPIC"; SHOBJLDFLAGS="" ], SHOBJFLAGS="", SHOBJFLAGS="");
-  fi
-  if test -z "$SHOBJFLAGS"; then
-    LDFLAGS="$OLD_LDFLAGS -shared -Wl,-G,-z,textoff"
-    AC_TRY_LINK([#include <stdio.h>
-int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS="-shared -Wl,-G,-z,textoff"; SHOBJLDFLAGS="" ], SHOBJFLAGS="", SHOBJFLAGS="");
-  fi
-  if test -z "$SHOBJFLAGS"; then
-    LDFLAGS="$OLD_LDFLAGS -Wl,-G,-z,textoff -rdynamic -fPIC"
-    AC_TRY_LINK([#include <stdio.h>
-int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS="-Wl,-G,-z,textoff -fPIC"; SHOBJLDFLAGS="-rdynamic" ], SHOBJFLAGS="", SHOBJFLAGS="");
-  fi
-  if test -z "$SHOBJFLAGS"; then
-    LDFLAGS="$OLD_LDFLAGS -Wl,-G,-z,textoff -rdynamic"
-    AC_TRY_LINK([#include <stdio.h>
-int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS="-Wl,-G,-z,textoff"; SHOBJLDFLAGS="-rdynamic" ], SHOBJFLAGS="", SHOBJFLAGS="");
-  fi
-  if test -z "$SHOBJFLAGS"; then
-    LDFLAGS="$OLD_LDFLAGS -Wl,-G,-z,textoff -fPIC"
-    AC_TRY_LINK([#include <stdio.h>
-int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS="-Wl,-G,-z,textoff -fPIC"; SHOBJLDFLAGS="" ], SHOBJFLAGS="", SHOBJFLAGS="");
-  fi
-  if test -z "$SHOBJFLAGS"; then
-    LDFLAGS="$OLD_LDFLAGS -Wl,-G,-z,textoff"
-    AC_TRY_LINK([#include <stdio.h>
-int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS="-Wl,-G,-z,textoff"; SHOBJLDFLAGS="" ], SHOBJFLAGS="", SHOBJFLAGS="");
-  fi
-  if test -z "$SHOBJFLAGS"; then
-    LDFLAGS="$LDFLAGS -shared -rdynamic -fPIC"
-    AC_TRY_LINK([#include <stdio.h>
-int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS="-shared -fPIC"; SHOBJLDFLAGS="-rdynamic" ], SHOBJFLAGS="", SHOBJFLAGS="");
-  fi
-  if test -z "$SHOBJFLAGS"; then
-    LDFLAGS="$OLD_LDFLAGS -shared -fPIC"
-    AC_TRY_LINK([#include <stdio.h>
-int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS="-shared -fPIC"; SHOBJLDFLAGS="" ], SHOBJFLAGS="", SHOBJFLAGS="");
-  fi
-  if test -z "$SHOBJFLAGS"; then
-    LDFLAGS="$OLD_LDFLAGS -shared"
-    AC_TRY_LINK([#include <stdio.h>
-int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS="-shared"; SHOBJLDFLAGS="" ], SHOBJFLAGS="", SHOBJFLAGS="");
-  fi
+
+  LDFLAGS="$OLD_LDFLAGS $1 $2"
+
+  AC_TRY_LINK([#include <stdio.h>
+int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS="$1"; SHOBJLDFLAGS="$2" ], [
   LDFLAGS="$OLD_LDFLAGS"
+  $3
+])
+
+  LDFLAGS="$OLD_LDFLAGS"
+])
+
+AC_DEFUN(DC_GET_SHOBJFLAGS, [
+  AC_MSG_CHECKING(how to create shared objects)
+
+  DC_TEST_SHOBJFLAGS([-shared -fPIC], [-rdynamic], [
+    DC_TEST_SHOBJFLAGS([-shared -fPIC], [], [
+      DC_TEST_SHOBJFLAGS([-shared -fPIC], [-rdynamic -Wl,-G,-z,textoff], [
+        DC_TEST_SHOBJFLAGS([-shared -fPIC], [-Wl,-G,-z,textoff], [
+          AC_MSG_ERROR(cant)
+        ])
+      ])
+    ])
+  ])
+
   AC_MSG_RESULT($SHOBJLDFLAGS $SHOBJFLAGS)
 ])

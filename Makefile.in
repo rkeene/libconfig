@@ -29,18 +29,24 @@ includedir = @includedir@
 
 LIBS = libconfig.$(AREXT) libconfig.$(SHOBJEXT)
 BINS =
+# The following two lines need to be kept syncronised.
 OBJS = libconfig.o conf_space.o conf_section.o conf_apache.o conf_colon.o conf_equal.o conf_xml.o
+SHOBJS = libconfig_shr.o conf_space_shr.o conf_section_shr.o conf_apache_shr.o conf_colon_shr.o conf_equal_shr.o conf_xml_shr.o
 
 all: $(LIBS) $(BINS)
-libconfig.$(SHOBJEXT): $(OBJS) @LIBOBJS@
-	@echo $(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $(^:.o=.c); \
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $(^:.o=.c)
+libconfig.$(SHOBJEXT): $(SHOBJS) @LIBOBJS@
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $^
 
 libconfig.$(AREXT): $(OBJS) @LIBOBJS@
 	$(AR) rcu $@ $^
 	-$(RANLIB) $@
 
 libconfig.o: libconfig.c compat.h win32.h config.h libconfig.h
+libconfig_shr.o: libconfig.c compat.h win32.h config.h libconfig.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) -c -o $@ libconfig.c
+
+%_shr.o: %.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) -c -o $@ $^
 
 libconfig.h: libconfig.h.in
 	cat $^ | $(CPP) $(CPPFLAGS) - | grep -v '^#' | grep -v '^ *$$' | sed 's/^!/#  /g;s/__BLANK_LINE__//' > $@
