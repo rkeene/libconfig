@@ -110,7 +110,7 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 		/* Find the command and the data in the line. */
 		cmdend = sep = strpbrk(linebuf_ptr, "=");
 		if (sep == NULL) {
-			PRINTERR("Invalid line: \"%s\"", linebuf);
+			PRINTERR_D("Invalid line: \"%s\"", linebuf);
 			continue;
 		}
 
