@@ -70,8 +70,8 @@ AC_DEFUN(DC_GET_SHOBJFLAGS, [
 		DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-shared -dynamiclib -flat_namespace -undefined suppress -bind_at_load], [
 		  DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-dynamiclib -flat_namespace -undefined suppress -bind_at_load], [
 		    DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-Wl,-dynamiclib -Wl,-flat_namespace -Wl,-undefined,suppress -Wl,-bind_at_load], [
-		      DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-dynamic -flat_namespace -undefined suppress], [
-		        DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-dynamic], [
+		      DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-dynamiclib -flat_namespace -undefined suppress], [
+		        DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-dynamiclib], [
 		          AC_MSG_RESULT(cant)
 		          AC_MSG_ERROR([We are unable to make shared objects.])
                         ])
