@@ -16,7 +16,16 @@ libconfig \- Consistent configuration library.
 .BI "char *lc_geterrstr(void);"
 
 .SH DESCRIPTION
-Libconfig is a library to provide easy access to configuration data in a consistent and logical manner.
+Libconfig is a library to provide easy access to configuration data in a consistent and logical manner.  Variables (registered through
+.BR lc_register_var (3)
+or
+.BR lc_register_callback (3))
+are processed with the
+.BR lc_process (3)
+function.  Errors can be examined through
+.BR lc_geterrno (3)
+and
+.BR lc_geterrstr (3).
 
 .SH EXAMPLE
 .nf
