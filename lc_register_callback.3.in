@@ -9,7 +9,7 @@ lc_register_callback \- Register a function for callback in config processing.
 
 .SH DESCRIPTION
 The
-.B lc_register_callback
+.BR lc_register_callback (3)
 function registers a function to be called when
 .IR var
 is encounted in a configuration file, command line, or environment variable.
@@ -70,7 +70,7 @@ This may be
 if the
 .IR var
 parameter to
-.BI lc_register_callback (3)
+.BR lc_register_callback (3)
 was
 .B NULL
 too.
@@ -86,7 +86,7 @@ This may be
 if the
 .IR var
 parameter to
-.BI lc_register_callback (3)
+.BR lc_register_callback (3)
 was
 .B NULL
 too.
@@ -112,7 +112,7 @@ This may be
 if no value was specified.  Values are required if the
 .IR type
 parameter to
-.BI lc_register_callback (3)
+.BR lc_register_callback (3)
 was not specified as one of LC_VAR_NONE, LC_VAR_SECTION, LC_VAR_SECTIONSTART, or LC_VAR_SECTIONEND.
 .RE
 .TP
@@ -136,7 +136,7 @@ The
 parameter is just a copy of the
 .IR extra
 parameter passed to
-.BI lc_register_callback (3)
+.BR lc_register_callback (3)
 when the callback was registered.
 .RE
 
@@ -152,7 +152,7 @@ Returning LC_CBRET_OKAY from a callback indicates that all went well and further
 .TP
 LC_CBRET_ERROR
 Returnning LC_CBRET_ERROR from a callback indicates that the command failed for some reason, the error will be passed back down the chain back to the
-.BI lc_process (3)
+.BR lc_process (3)
 call that began processing the configuration data.  If LC_CBRET_ERROR is returned from a callback that begins a section, the entire section is ignored.
 
 
