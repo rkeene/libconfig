@@ -1,5 +1,5 @@
 AC_REVISION($Revision $)
-AC_INIT(libconfig, 0.1.6)
+AC_INIT(libconfig, 0.1.7)
 AC_CONFIG_HEADER(config.h)
 
 dnl Find out about the host OS
@@ -24,7 +24,7 @@ DC_DO_TYPE(int32_t, signed, 4)
 DC_DO_TYPE(uint16_t, unsigned, 2)
 DC_DO_TYPE(int16_t, signed, 2)
 
-AC_REPLACE_FUNCS(strsep strtoll)
+AC_REPLACE_FUNCS(strsep strtoll getuid)
 AC_CHECK_FUNCS(getpwuid)
 
 DC_ASK_OPTLIB(opennet, fopen_net, opennet.h, [      Enable opennet support], libopennet, HAVE_LIBOPENNET, HAVE_OPENNET_H)

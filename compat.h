@@ -12,6 +12,9 @@
 #define LC_LINEBUF_LEN 1024
 #endif
 
+#ifndef HAVE_GETUID
+#include "getuid.h"
+#endif
 #ifndef HAVE_STRTOLL
 #include "strtoll.h"
 #endif

@@ -817,12 +817,14 @@ static int lc_process_files(const char *appname, lc_conf_type_t type, const char
 	snprintf(configfiles[1][11], sizeof(**configfiles) - 1, "/usr/local/etc/%s/%s.conf", appname, appname);
 	if (getuid() != 0) {
 		homedir = getenv("HOME");
+#ifdef HAVE_GETPWUID
 		if (homedir == NULL) {
 			pwinfo = getpwuid(getuid());
 			if (pwinfo != NULL) {
 				homedir = pwinfo->pw_dir;
 			}
 		}
+#endif
 		if (homedir != NULL) {
 			if (strcmp(homedir, "/") != 0 && access(homedir, R_OK|W_OK|X_OK) == 0) {
 				snprintf(configfiles[2][0], sizeof(**configfiles) - 1, "%s/.%src", homedir, appname);

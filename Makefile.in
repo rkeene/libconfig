@@ -56,7 +56,7 @@ test-lc: $(LIBS) test-lc.c
 
 .PHONY: clean distclean install
 clean:
-	rm -f *.o $(BINS) $(LIBS) libconfig.h *~ test-lc
+	rm -f *.o $(BINS) $(LIBS) libconfig.h *~ test-lc *.dll.a *.dll.def *.dll
 distclean: clean
 	rm -f Makefile config.h config.status config.log lc_geterrno.3 lc_process.3 lc_cleanup.3 lc_process_file.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 libconfig.3
 
