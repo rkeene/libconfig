@@ -5,10 +5,10 @@
 #include <stdio.h>
 
 /* We only handle base 10. */
-long long int strtoull(const char *nptr, char **endptr, int base) {
-	unsigned long long int retval = 0;
+long long int strtoll(const char *nptr, char **endptr, int base) {
+	long long int retval = 0;
 	const char **endptrd = (const char **) endptr;
-	char *idx = NULL;
+	const char *idx = NULL;
 	int allowspace = 1;
 
 	idx = nptr;
@@ -23,7 +23,7 @@ long long int strtoull(const char *nptr, char **endptr, int base) {
 				continue;
 			}
 			if ((*idx == ' ' || *idx == '\t') && allowspace) {
-				continue
+				continue;
 			}
 			break;
 		}

@@ -1,6 +1,6 @@
-#ifndef _RSK_STRTOULL_H
-#define _RSK_STRTOULL_H
+#ifndef _RSK_STRTOLL_H
+#define _RSK_STRTOLL_H
 
-long long int strtoull(const char *nptr, char **endptr, int base);
+long long int strtoll(const char *nptr, char **endptr, int base);
 
 #endif
