@@ -38,6 +38,7 @@
 
 struct lc_varhandler_st *varhandlers = NULL;
 lc_err_t lc_errno = LC_ERR_NONE;
+int lc_optind = 0;
 
 static int lc_process_var_string(void *data, const char *value) {
 	char **dataval;
@@ -271,9 +272,31 @@ static int lc_process_cmdline(int argc, char **argv) {
 	struct lc_varhandler_st *handler = NULL;
 	char *cmdarg = NULL, *cmdoptarg = NULL;
 	char *lastcomponent_handler = NULL;
+	char **newargv = NULL;
+	char *usedargv = NULL;
 	int cmdargidx = 0;
+	int newargvidx = 0;
 	int retval = 0, chkretval = 0;
 	int ch = 0;
+
+	/* Allocate "argc + 1" (+1 for the NULL terminator) elements. */
+	newargv = malloc((argc + 1) * sizeof(*newargv));
+	if (newargv == NULL) {
+		lc_errno = LC_ERR_ENOMEM;
+		return(-1);
+	}
+	newargv[newargvidx++] = argv[0];
+	newargv[argc] = NULL;
+
+	/* Allocate space to indicate which arguments have been used. */
+	usedargv = malloc(argc * sizeof(*usedargv));
+	if (usedargv == NULL) {
+		lc_errno = LC_ERR_ENOMEM;
+		return(-1);
+	}
+	for (cmdargidx = 0; cmdargidx < argc; cmdargidx++) {
+		usedargv[cmdargidx] = 0;
+	}
 
 	for (cmdargidx = 1; cmdargidx < argc; cmdargidx++) {
 		cmdarg = argv[cmdargidx];
@@ -287,6 +310,12 @@ static int lc_process_cmdline(int argc, char **argv) {
 		if (cmdarg[0] != '-') {
 			continue;
 		}
+
+		/* Setup a pointer in the new array for the actual argument. */
+		newargv[newargvidx++] = cmdarg;
+		usedargv[cmdargidx] = 1;
+
+		/* Then shift the argument past the '-' so we can ignore it. */
 		*cmdarg++;
 
 		/* Handle long options. */
@@ -314,12 +343,22 @@ static int lc_process_cmdline(int argc, char **argv) {
 				}
 
 				/* Find the last part of the variable and compare it with 
-				   the option being processed. */
-				lastcomponent_handler = strrchr(handler->var, '.');
-				if (lastcomponent_handler == NULL) {
-					lastcomponent_handler = handler->var;
+				   the option being processed, if a wildcard is given. */
+				if (handler->var[0] == '*' && handler->var[1] == '.') {
+					lastcomponent_handler = strrchr(handler->var, '.');
+					if (lastcomponent_handler == NULL) {
+						lastcomponent_handler = handler->var;
+					} else {
+						*lastcomponent_handler++;
+					}
 				} else {
-					*lastcomponent_handler++;
+					/* Disallow use of the fully qualified name
+					   since there was no sectionstart portion
+					   we cannot allow it to handle children of it. */
+					if (strchr(cmdarg, '.') != NULL) {
+						continue;
+					}
+					lastcomponent_handler = handler->var;
 				}
 
 				/* Ignore this handler if they don't match. */
@@ -337,6 +376,8 @@ static int lc_process_cmdline(int argc, char **argv) {
 						return(-1);
 					}
 					cmdoptarg = argv[cmdargidx];
+					newargv[newargvidx++] = cmdoptarg;
+					usedargv[cmdargidx] = 1;
 				}
 
 				chkretval = lc_handle(handler, handler->var, NULL, cmdoptarg, LC_FLAGS_CMDLINE);
@@ -379,6 +420,8 @@ static int lc_process_cmdline(int argc, char **argv) {
 							return(-1);
 						}
 						cmdoptarg = argv[cmdargidx];
+						newargv[newargvidx++] = cmdoptarg;
+						usedargv[cmdargidx] = 1;
 					}
 
 					chkretval = lc_handle(handler, handler->var, NULL, cmdoptarg, LC_FLAGS_CMDLINE);
@@ -395,6 +438,22 @@ static int lc_process_cmdline(int argc, char **argv) {
 					return(-1);
 				}
 			}
+		}
+	}
+
+	if (retval >= 0) {
+		lc_optind = newargvidx;
+		for (cmdargidx = 1; cmdargidx < argc; cmdargidx++) {
+			if (usedargv[cmdargidx] != 0) {
+				continue;
+			}
+			
+			cmdarg = argv[cmdargidx];
+
+			newargv[newargvidx++] = cmdarg;
+		}
+		for (cmdargidx = 1; cmdargidx < argc; cmdargidx++) {
+			argv[cmdargidx] = newargv[cmdargidx];
 		}
 	}
 

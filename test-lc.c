@@ -34,6 +34,7 @@ int main(int argc, char **argv) {
 	long long xval = -1;
 	int onoff = -1;
 	int lcpret = -1;
+	int i = 0;
 	lc_err_t errs;
 
 	lc_register_var("Section", LC_VAR_SECTION, NULL, 0);
@@ -57,6 +58,9 @@ int main(int argc, char **argv) {
 	}
 	PRINTERR("xval = %lli", xval);
 	PRINTERR("onoff = %i", onoff);
+	for (i = lc_optind; i < argc; i++) {
+		PRINTERR("argv[%i] = \"%s\"", i, argv[i]);
+	}
 
 	return(0);
 }

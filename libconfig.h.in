@@ -55,7 +55,7 @@ typedef enum {
         LC_ERR_BADFORMAT,
         LC_ERR_CANTOPEN,
         LC_ERR_CALLBACK,
-	LC_ERR_ENOMEM
+        LC_ERR_ENOMEM
 } lc_err_t;
 
 __BLANK_LINE__
@@ -71,6 +71,10 @@ __BLANK_LINE__
 !define LC_CBRET_IGNORESECTION (255)
 !define LC_CBRET_OKAY (0)
 !define LC_CBRET_ERROR (-1)
+
+__BLANK_LINE__
+
+extern int lc_optind;
 
 __BLANK_LINE__
 
