@@ -37,7 +37,7 @@ parameter indicates the single charectar short option to use from the command li
 .RS
 The
 .IR type
-parameter indicates the type of values that are acceptable for this callback.  Currently only LC_VAR_NONE is acceptable, since callbacks may not have values (though they may have arguments).
+parameter indicates the type of values that are acceptable for this callback.  A value of LC_VAR_NONE means that the command will accept no arguments, while a value of LC_VAR_UNKNOWN indicates that it's not known whether or not an argument is applicable, this will also disable command line processing.  Any other value is currently ignored.
 .RE
 
 .TP

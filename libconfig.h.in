@@ -37,7 +37,10 @@ typedef enum {
         LC_VAR_SECTION,
         LC_VAR_SECTIONSTART,
         LC_VAR_SECTIONEND,
-        LC_VAR_BOOL_BY_EXISTANCE
+        LC_VAR_BOOL_BY_EXISTANCE,
+        LC_VAR_SIZE_SIZE_T,
+	LC_VAR_CIDR,
+	LC_VAR_IP,
 } lc_var_type_t;
 
 __BLANK_LINE__

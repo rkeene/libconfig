@@ -51,6 +51,45 @@ static int lc_process_var_string(void *data, const char *value) {
 	return(0);
 }
 
+static int lc_process_var_cidr(void *data, const char *value) {
+	
+
+	return(0);
+}
+
+static int lc_process_var_ip(void *data, const char *value) {
+	uint32_t *dataval = NULL, retval = 0;
+	const char *dotptr = NULL;
+	int tmpval = -1;
+
+	dataval = data;
+
+	dotptr = value;
+
+	while (1) {
+		tmpval = atoi(dotptr);
+		if (tmpval < 0) {
+			break;
+		}
+
+		retval <<= 8;
+		retval |= tmpval;
+
+		dotptr = strpbrk(dotptr, "./ \t");
+		if (dotptr == NULL) {
+			break;
+		}
+		if (*dotptr != '.') {
+			break;
+		}
+		dotptr++;
+	}
+
+	*dataval = retval;
+
+	return(0);
+}
+
 static int lc_process_var_longlong(void *data, const char *value) {
 	long long *dataval;
 
@@ -192,6 +231,16 @@ static int lc_process_var_sizeshort(void *data, const char *value) {
 	return(0);
 }
 
+static int lc_process_var_sizesizet(void *data, const char *value) {
+	size_t *dataval;
+
+	dataval = data;
+	*dataval = lc_process_size(value);
+
+	return(0);
+}
+
+
 static int lc_handle_type(lc_var_type_t type, const char *value, void *data) {
 	switch (type) {
 		case LC_VAR_STRING:
@@ -226,6 +275,12 @@ static int lc_handle_type(lc_var_type_t type, const char *value, void *data) {
 			break;
 		case LC_VAR_BOOL_BY_EXISTANCE:
 			return(lc_process_var_bool_byexistance(data, value));
+			break;
+		case LC_VAR_SIZE_SIZE_T:
+			return(lc_process_var_sizesizet(data, value));
+			break;
+		case LC_VAR_IP:
+			return(lc_process_var_ip(data, value));
 			break;
 		case LC_VAR_TIME:
 		case LC_VAR_DATE:

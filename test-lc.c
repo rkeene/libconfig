@@ -31,19 +31,20 @@ int cmd_ifmodule(const char *partarg, const char *arg, const char *argarg, const
 
 int main(int argc, char **argv) {
 	char *joeval = NULL;
-	long long xval = -1;
+	size_t xval = -1;
 	int onoff = -1;
 	int lcpret = -1;
 	int i = 0;
 	int onoff2 = 0;
-	lc_err_t errs;
+	uint32_t ipaddr;
 
 	lc_register_var("Section", LC_VAR_SECTION, NULL, 0);
 	lc_register_var("Somesection", LC_VAR_SECTION, NULL, 0);
 	lc_register_var("Section.Test", LC_VAR_STRING, &joeval, 'j');
-	lc_register_var("bob", LC_VAR_SIZE_LONG_LONG, &xval, 's');
+	lc_register_var("bob", LC_VAR_SIZE_SIZE_T, &xval, 's');
 	lc_register_var("Somesection.Free", LC_VAR_BOOL, &onoff, 0);
 	lc_register_var("long", LC_VAR_BOOL_BY_EXISTANCE, &onoff2, 'l');
+	lc_register_var("ipaddr", LC_VAR_IP, &ipaddr, 'i');
 	lc_register_callback("sally", 0, LC_VAR_STRING, sally_cmd, NULL);
 	lc_register_callback("HELP", 'h', LC_VAR_NONE, help_cmd, NULL);
 	lc_register_callback("*.ifmodule", 0, LC_VAR_NONE, cmd_ifmodule, NULL);
@@ -58,9 +59,10 @@ int main(int argc, char **argv) {
 	} else {
 		fprintf(stderr, "joeval = \"(null)\"\n");
 	}
-	fprintf(stderr, "xval = %lli\n", xval);
+	fprintf(stderr, "xval = %llu\n", (unsigned long long) xval);
 	fprintf(stderr, "onoff = %i\n", onoff);
 	fprintf(stderr, "long = %i\n", onoff2);
+	fprintf(stderr, "ip = %08lx\n", (unsigned long) ipaddr);
 	for (i = lc_optind; i < argc; i++) {
 		fprintf(stderr, "argv[%i] = \"%s\"\n", i, argv[i]);
 	}

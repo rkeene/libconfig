@@ -18,6 +18,8 @@ lc_register_callback.3
 lc_register_callback.3/*
 lc_register_var.3
 lc_register_var.3/*
+libconfig.3
+libconfig.3/*
 libconfig.a
 libconfig.a/*
 libconfig.h

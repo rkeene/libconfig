@@ -67,6 +67,9 @@ For a "int" integer type that can have size modifiers, such as 'G' or gigabytes,
 LC_VAR_SIZE_SHORT
 For a "short" integer type that can have size modifiers, such as 'G' or gigabytes, 'M' for megabytes, 'K' for kilobytes.  The data passed should be of type "short *".
 .TP
+LC_VAR_SIZE_SIZE_T
+For a "size_t" data type that can have size modifiers, such as 'G' or gigabytes, 'M' for megabytes, 'K' for kilobytes.  The data passed should be of type "size_t *".
+.TP
 LC_VAR_TIME
 Not implemented.
 .TP
@@ -75,6 +78,12 @@ Not implemented.
 .TP
 LC_VAR_BOOL_BY_EXISTANCE
 This type of variable takes no arguments, it is set to true (1) by its existance in a configuration file, environment variable, or on the command line.  If it is not specified, the value of the data passed is not changed.  The data passed should be of type "int *".
+.TP
+LC_VAR_CIDR
+XXX: blah
+.TP
+LC_VAR_IP
+XXX: blah
 
 .SH "RETURN VALUE"
 On success 0 is returned, otherwise -1 is returned.
