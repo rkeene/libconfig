@@ -80,4 +80,13 @@
 #endif
 #endif
 
+#ifdef HAVE_OPENNET_H
+#include <opennet.h>
+#endif
+#ifdef HAVE_LIBOPENNET
+#define lc_fopen(path, mode) fopen_net(path, mode)
+#else
+#define lc_fopen(path, mode) fopen(path, mode)
+#endif
+
 #endif

@@ -761,7 +761,7 @@ int lc_register_var(const char *var, lc_var_type_t type, void *data, char opt) {
 	return(0);
 }
 
-static int lc_process_file(const char *appname, const char *pathname, lc_conf_type_t type) {
+int lc_process_file(const char *appname, const char *pathname, lc_conf_type_t type) {
 	int chkretval = 0;
 
 	switch (type) {
@@ -854,7 +854,7 @@ static int lc_process_files(const char *appname, lc_conf_type_t type, const char
 	return(retval);
 }
 
-static void lc_cleanup(void) {
+void lc_cleanup(void) {
 	struct lc_varhandler_st *handler = NULL, *next = NULL;
 
 	handler = varhandlers;
@@ -893,9 +893,6 @@ int lc_process(int argc, char **argv, const char *appname, lc_conf_type_t type, 
 	if (chkretval < 0) {
 		retval = -1;
 	}
-
-	/* Free our structures. */
-	lc_cleanup();
 
 	return(retval);
 }

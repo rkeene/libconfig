@@ -7,3 +7,11 @@ Building it should be as easy as:
 	$ make install
 
 (note that `make' must not be BSD make, all other makes work fine.)
+
+
+OPTIONAL DEPENDENCIES:
+	* libopennet (http://www.rkeene.org/oss/libopennet/)
+	  Libopennet allows URLs to be opened as easily as files, if it is
+	  available (and the --without-libopennet argument isn't passed to
+	  the `configure' script) libconfig will be able to process config
+	  files that are passed as URLs.

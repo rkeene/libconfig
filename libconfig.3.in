@@ -22,10 +22,15 @@ or
 .BR lc_register_callback (3))
 are processed with the
 .BR lc_process (3)
-function.  Errors can be examined through
+and
+.BR lc_process_file (3)
+functions.  Errors can be examined through
 .BR lc_geterrno (3)
 and
 .BR lc_geterrstr (3).
+Clean-up may be performed using the
+.BR lc_cleanup (3)
+function.
 
 .SH EXAMPLE
 .nf
@@ -48,6 +53,8 @@ int main(int argc, char **argv) {
 
 	lc_p_ret = lc_process(argc, argv, "example", LC_CONF_APACHE,
 	                      NULL);
+	lc_cleanup();
+
 	if (lc_p_ret != 0) {
 		fprintf(stderr, "Error processing configuration: \\
 		        %s\\n", lc_geterrstr());
@@ -69,4 +76,6 @@ int main(int argc, char **argv) {
 .BR lc_register_callback (3),
 .BR lc_geterr (3),
 .BR lc_geterrstr (3),
-.BR lc_process (3)
+.BR lc_cleanup (3),
+.BR lc_process (3),
+.BR lc_process_file (3)

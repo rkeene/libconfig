@@ -225,4 +225,6 @@ Memory could not be allocated to create the needed internal structures.
 .BR lc_register_var (3),
 .BR lc_geterrno (3),
 .BR lc_geterrstr (3),
+.BR lc_cleanup (3),
+.BR lc_process_file (3),
 .BR lc_process (3)

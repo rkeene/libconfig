@@ -102,7 +102,7 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 		return(-1);
 	}
 
-	configfp = fopen(configfile, "r");
+	configfp = lc_fopen(configfile, "r");
 
 	if (configfp == NULL) {
 		lc_errno = LC_ERR_CANTOPEN;

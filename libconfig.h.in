@@ -73,6 +73,8 @@ int lc_register_callback(const char *var, char opt, lc_var_type_t type, int (*ca
 int lc_register_var(const char *var, lc_var_type_t type, void *data, char opt);
 lc_err_t lc_geterrno(void);
 char *lc_geterrstr(void);
+int lc_process_file(const char *appname, const char *pathname, lc_conf_type_t type);
+void lc_cleanup(void);
 
 __BLANK_LINE__
 

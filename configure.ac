@@ -1,5 +1,5 @@
 AC_REVISION($Revision $)
-AC_INIT(libconfig, 0.1.4)
+AC_INIT(libconfig, 0.1.5)
 AC_CONFIG_HEADER(config.h)
 
 dnl Find out about the host OS
@@ -27,10 +27,12 @@ DC_DO_TYPE(int16_t, signed, 2)
 AC_REPLACE_FUNCS(strsep strtoll)
 AC_CHECK_FUNCS(getpwuid)
 
+DC_ASK_OPTLIB(opennet, open_net, opennet.h, [      Enable opennet support], libopennet, HAVE_LIBOPENNET, HAVE_OPENNET_H)
+
 dnl Checks for Win32 specific things.
 DC_DO_WIN32
 
 dnl This must be last.
 DC_GET_SHOBJFLAGS
 
-AC_OUTPUT(Makefile lc_geterrno.3 lc_process.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 libconfig.3)
+AC_OUTPUT(Makefile lc_geterrno.3 lc_process.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 lc_cleanup.3 lc_process_file.3 libconfig.3)
