@@ -5,8 +5,9 @@
 #include <stdio.h>
 
 /* We only handle base 10. */
-unsigned long long int strtoull(char *nptr, char **endptr, int base) {
+unsigned long long int strtoull(const char *nptr, char **endptr, int base) {
 	unsigned long long int retval = 0;
+	const char **endptrd = (const char **) endptr;
 	char *idx = NULL;
 
 	for (idx = nptr; *idx != '\0' && isdigit(*idx); idx++) {
@@ -14,8 +15,8 @@ unsigned long long int strtoull(char *nptr, char **endptr, int base) {
 		retval += (*idx - '0');
 	}
 
-	if (endptr != NULL) {
-		*endptr = idx;
+	if (endptrd != NULL) {
+		*endptrd = idx;
 	}
 
 	return(retval);
