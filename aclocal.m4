@@ -69,8 +69,14 @@ AC_DEFUN(DC_GET_SHOBJFLAGS, [
 	      DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-shared -Wl,-G,-z,textoff], [
 		DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-shared -dynamiclib -flat_namespace -undefined suppress -bind_at_load], [
 		  DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-dynamiclib -flat_namespace -undefined suppress -bind_at_load], [
-		    AC_MSG_RESULT(cant)
-		    AC_MSG_ERROR([We are unable to make shared objects.])
+		    DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-Wl,-dynamiclib -Wl,-flat_namespace -Wl,-undefined,suppress -Wl,-bind_at_load], [
+		      DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-dynamic -flat_namespace -undefined suppress], [
+		        DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-dynamic], [
+		          AC_MSG_RESULT(cant)
+		          AC_MSG_ERROR([We are unable to make shared objects.])
+                        ])
+		      ])
+		    ])
 		  ])
 		])
 	      ])
@@ -184,7 +190,7 @@ AC_DEFUN(DC_ASK_OPTLIB, [
 		      AC_DEFINE($6, [1], [Define to 1 if you have $2 from $5])
 		    fi
 		    LDFLAGS="$LDFLAGS $LIBSPECFLAGS"
-		    LIBS="$LIBS -l$1"
+		    LIBS="-l$1 $LIBS"
 		  ], [
 		    CFLAGS="$OLDCFLAGS"
 		    CPPFLAGS="$OLDCPPFLAGS"
@@ -195,4 +201,22 @@ AC_DEFUN(DC_ASK_OPTLIB, [
 		], $LIBSPECFLAGS)
   		;;
   esac
+])
+
+AC_DEFUN(DC_ASK_SMALL, [
+	SMALL=0
+	AC_ARG_ENABLE(small, AC_HELP_STRING([--enable-small], [Enable small build of libconfig. (disabled)]), [
+		case $enableval in
+			yes)            
+				SMALL=1
+				;;      
+		esac    
+	])
+
+	if test $SMALL = 0; then
+		dnl Use opennet if it's available AND not small
+		DC_ASK_OPTLIB(opennet, fopen_net, opennet.h, [      Enable opennet support (auto)], libopennet, HAVE_LIBOPENNET, HAVE_OPENNET_H)
+	else
+		AC_DEFINE(ENABLE_SMALL, [1], [Define to 1 if you want to produce a minimalistic build.])
+	fi
 ])

@@ -14,7 +14,7 @@ Packager: Roy Keene <libconfig@rkeene.org>
 libconfig is common configuration file parsing library.
 
 %prep
-%setup
+%setup -q
 
 %build
 ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var || exit 1

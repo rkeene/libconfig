@@ -337,6 +337,7 @@ static int lc_handle(struct lc_varhandler_st *handler, const char *var, const ch
 }
 
 static int lc_process_environment(const char *appname) {
+#ifndef ENABLE_SMALL
 	struct lc_varhandler_st *handler = NULL;
 	size_t appnamelen = 0;
 	char varnamebuf[128] = {0};
@@ -452,6 +453,7 @@ static int lc_process_environment(const char *appname) {
 
 	free(ucase_appname);
 
+#endif
 	return(0);
 }
 

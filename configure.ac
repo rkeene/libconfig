@@ -1,5 +1,5 @@
 AC_REVISION($Revision $)
-AC_INIT(libconfig, 0.1.14)
+AC_INIT(libconfig, 0.1.15)
 AC_CONFIG_HEADER(config.h)
 
 dnl Find out about the host OS
@@ -21,8 +21,9 @@ DC_DO_TYPE(int32_t, signed, 4)
 DC_DO_TYPE(uint16_t, unsigned, 2)
 DC_DO_TYPE(int16_t, signed, 2)
 
-dnl Use opennet if it's available
-DC_ASK_OPTLIB(opennet, fopen_net, opennet.h, [      Enable opennet support], libopennet, HAVE_LIBOPENNET, HAVE_OPENNET_H)
+dnl This will cause optional libraries to be disabled even if they're
+dnl available and specified.
+DC_ASK_SMALL
 
 dnl Checks for Win32 specific things.
 DC_DO_WIN32

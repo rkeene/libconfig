@@ -2,7 +2,7 @@
 
 if [ ! -x configure ]; then cd ../; fi
 WIN32="${HOME}/root/windows-i386"
-CFLAGS="-I${WIN32}/include"
+CFLAGS="-I${WIN32}/include -march=i386"
 CPPFLAGS="${CFLAGS}"
 LDFLAGS="-L${WIN32}/lib"
 DATE="`date +%Y%m%d%H%M`"
