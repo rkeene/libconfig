@@ -16323,7 +16323,7 @@ rm -f conftest.err conftest.$ac_objext \
 echo "${ECHO_T}$SHOBJLDFLAGS $SHOBJFLAGS" >&6
 
 
-                                                            ac_config_files="$ac_config_files Makefile lc_geterrno.3 lc_process.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3"
+                                                                      ac_config_files="$ac_config_files Makefile lc_geterrno.3 lc_process.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 libconfig.3"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -16855,6 +16855,7 @@ do
   "lc_register_var.3" ) CONFIG_FILES="$CONFIG_FILES lc_register_var.3" ;;
   "lc_geterrstr.3" ) CONFIG_FILES="$CONFIG_FILES lc_geterrstr.3" ;;
   "lc_register_callback.3" ) CONFIG_FILES="$CONFIG_FILES lc_register_callback.3" ;;
+  "libconfig.3" ) CONFIG_FILES="$CONFIG_FILES libconfig.3" ;;
   "config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

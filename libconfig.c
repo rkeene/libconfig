@@ -745,19 +745,21 @@ static int lc_process_files(const char *appname, lc_conf_type_t type, const char
 	int configsetidx = 0, configidx = 0;
 	int chkretval = 0, retval = 0;
 
-	snprintf(configfiles[0][0], sizeof(**configfiles) - 1, "/etc/%s.cfg", appname);
-	snprintf(configfiles[0][1], sizeof(**configfiles) - 1, "/etc/%s.conf", appname);
-	snprintf(configfiles[0][2], sizeof(**configfiles) - 1, "/etc/%s/%s.cfg", appname, appname);
-	snprintf(configfiles[0][3], sizeof(**configfiles) - 1, "/etc/%s/%s.conf", appname, appname);
-	snprintf(configfiles[0][4], sizeof(**configfiles) - 1, "/usr/etc/%s.cfg", appname);
-	snprintf(configfiles[0][5], sizeof(**configfiles) - 1, "/usr/etc/%s.conf", appname);
-	snprintf(configfiles[0][6], sizeof(**configfiles) - 1, "/usr/etc/%s/%s.cfg", appname, appname);
-	snprintf(configfiles[0][7], sizeof(**configfiles) - 1, "/usr/etc/%s/%s.conf", appname, appname);
-	snprintf(configfiles[0][8], sizeof(**configfiles) - 1, "/usr/local/etc/%s.cfg", appname);
-	snprintf(configfiles[0][9], sizeof(**configfiles) - 1, "/usr/local/etc/%s.conf", appname);
-	snprintf(configfiles[0][10], sizeof(**configfiles) - 1, "/usr/local/etc/%s/%s.cfg", appname, appname);
-	snprintf(configfiles[0][11], sizeof(**configfiles) - 1, "/usr/local/etc/%s/%s.conf", appname, appname);
-	snprintf(configfiles[1][0], sizeof(**configfiles) - 1, "%s", extraconfig);
+	if (extraconfig != NULL) {
+		snprintf(configfiles[0][0], sizeof(**configfiles) - 1, "%s", extraconfig);
+	}
+	snprintf(configfiles[1][0], sizeof(**configfiles) - 1, "/etc/%s.cfg", appname);
+	snprintf(configfiles[1][1], sizeof(**configfiles) - 1, "/etc/%s.conf", appname);
+	snprintf(configfiles[1][2], sizeof(**configfiles) - 1, "/etc/%s/%s.cfg", appname, appname);
+	snprintf(configfiles[1][3], sizeof(**configfiles) - 1, "/etc/%s/%s.conf", appname, appname);
+	snprintf(configfiles[1][4], sizeof(**configfiles) - 1, "/usr/etc/%s.cfg", appname);
+	snprintf(configfiles[1][5], sizeof(**configfiles) - 1, "/usr/etc/%s.conf", appname);
+	snprintf(configfiles[1][6], sizeof(**configfiles) - 1, "/usr/etc/%s/%s.cfg", appname, appname);
+	snprintf(configfiles[1][7], sizeof(**configfiles) - 1, "/usr/etc/%s/%s.conf", appname, appname);
+	snprintf(configfiles[1][8], sizeof(**configfiles) - 1, "/usr/local/etc/%s.cfg", appname);
+	snprintf(configfiles[1][9], sizeof(**configfiles) - 1, "/usr/local/etc/%s.conf", appname);
+	snprintf(configfiles[1][10], sizeof(**configfiles) - 1, "/usr/local/etc/%s/%s.cfg", appname, appname);
+	snprintf(configfiles[1][11], sizeof(**configfiles) - 1, "/usr/local/etc/%s/%s.conf", appname, appname);
 	if (getuid() != 0) {
 		homedir = getenv("HOME");
 		if (homedir == NULL) {

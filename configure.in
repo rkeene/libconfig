@@ -33,4 +33,4 @@ DC_DO_WIN32
 dnl This must be last.
 DC_GET_SHOBJFLAGS
 
-AC_OUTPUT(Makefile lc_geterrno.3 lc_process.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3)
+AC_OUTPUT(Makefile lc_geterrno.3 lc_process.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 libconfig.3)
