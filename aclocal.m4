@@ -55,6 +55,8 @@ int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS
 ])
 
 AC_DEFUN(DC_GET_SHOBJFLAGS, [
+  AC_SUBST(SHLIBOBJS)
+
   AC_MSG_CHECKING(how to create shared objects)
 
   DC_TEST_SHOBJFLAGS([-shared -fPIC], [-rdynamic], [
@@ -66,6 +68,10 @@ AC_DEFUN(DC_GET_SHOBJFLAGS, [
       ])
     ])
   ])
+
+  for obj in $LIB@&t@OBJS; do
+    SHLIBOBJS="$SHLIBOBJS `echo $obj | sed 's/\.o$/_shr.o/g'`"
+  done
 
   AC_MSG_RESULT($SHOBJLDFLAGS $SHOBJFLAGS)
 ])

@@ -1,5 +1,5 @@
 AC_REVISION($Revision $)
-AC_INIT(libconfig, 0.0.4)
+AC_INIT(libconfig, 0.0.5)
 AC_CONFIG_HEADER(config.h)
 
 dnl Checks for programs.
@@ -28,6 +28,7 @@ AC_CHECK_FUNCS(getpwuid)
 dnl Checks for Win32 specific things.
 DC_DO_WIN32
 
+dnl This must be last.
 DC_GET_SHOBJFLAGS
 
 AC_OUTPUT(Makefile lc_geterrno.3 lc_process.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3)

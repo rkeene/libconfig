@@ -30,14 +30,14 @@ includedir = @includedir@
 LIBS = libconfig.$(AREXT) libconfig.$(SHOBJEXT)
 BINS =
 # The following two lines need to be kept syncronised.
-OBJS = libconfig.o conf_space.o conf_section.o conf_apache.o conf_colon.o conf_equal.o conf_xml.o
-SHOBJS = libconfig_shr.o conf_space_shr.o conf_section_shr.o conf_apache_shr.o conf_colon_shr.o conf_equal_shr.o conf_xml_shr.o
+OBJS = libconfig.o conf_space.o conf_section.o conf_apache.o conf_colon.o conf_equal.o conf_xml.o @LIBOBJS@
+SHOBJS = libconfig_shr.o conf_space_shr.o conf_section_shr.o conf_apache_shr.o conf_colon_shr.o conf_equal_shr.o conf_xml_shr.o @SHLIBOBJS@
 
 all: $(LIBS) $(BINS)
-libconfig.$(SHOBJEXT): $(SHOBJS) @LIBOBJS@
+libconfig.$(SHOBJEXT): $(SHOBJS)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $^
 
-libconfig.$(AREXT): $(OBJS) @LIBOBJS@
+libconfig.$(AREXT): $(OBJS)
 	$(AR) rcu $@ $^
 	-$(RANLIB) $@
 
