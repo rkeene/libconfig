@@ -3,5 +3,5 @@
 #include "conf_colon.h"
 
 int lc_process_conf_colon(const char *appname, const char *configfile) {
-	return(0);
+	return(-1);
 }
