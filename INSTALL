@@ -1,0 +1,9 @@
+Libconfig uses GNU autoconf configure scripts to build and should build on
+almost any platform.
+
+Building it should be as easy as:
+	$ ./configure
+	$ make
+	$ make install
+
+(note that `make' must not be BSD make, all other makes work fine.)
