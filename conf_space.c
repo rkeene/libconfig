@@ -17,14 +17,18 @@ int lc_process_conf_space(const char *appname, const char *configfile) {
 	char *cmd = NULL, *value = NULL, *sep = NULL;
 	char *fgetsret = NULL;
 	int lcpvret = -1;
+	int retval = 0;
+	lc_err_t save_lc_errno = LC_ERR_NONE;
 
 	if (appname == NULL || configfile == NULL) {
+		lc_errno = LC_ERR_INVDATA;
 		return(-1);
 	}
 
 	configfp = fopen(configfile, "r");
 
 	if (configfp == NULL) {
+		lc_errno = LC_ERR_CANTOPEN;
 		return(-1);
 	}
 
@@ -66,13 +70,23 @@ int lc_process_conf_space(const char *appname, const char *configfile) {
 			value = NULL;
 		}
 
+		save_lc_errno = lc_errno;
+		lc_errno = LC_ERR_NONE;
 		lcpvret = lc_process_var(cmd, NULL, value, LC_FLAGS_VAR);
 		if (lcpvret < 0) {
-			PRINTERR_D("Invalid command: \"%s\"", cmd);
+			if (lc_errno == LC_ERR_NONE) {
+				PRINTERR_D("Invalid command: \"%s\"", cmd);
+				lc_errno = LC_ERR_INVCMD;
+			} else {
+				PRINTERR_D("Error processing command (command was valid, but an error occured, errno was set)");
+			}
+			retval = -1;
+		} else {
+			lc_errno = save_lc_errno;
 		}
 	}
 
 	fclose(configfp);
 
-	return(0);
+	return(retval);
 }

@@ -31,6 +31,7 @@ typedef enum {
         LC_VAR_SIZE_SHORT,
         LC_VAR_TIME,
         LC_VAR_DATE,
+        LC_VAR_SECTION,
         LC_VAR_SECTIONSTART,
         LC_VAR_SECTIONEND
 } lc_var_type_t;
@@ -38,16 +39,37 @@ typedef enum {
 __BLANK_LINE__
 
 typedef enum {
-	LC_FLAGS_VAR,
+        LC_FLAGS_VAR,
+        LC_FLAGS_CMDLINE,
         LC_FLAGS_SECTIONSTART,
         LC_FLAGS_SECTIONEND
 } lc_flags_t;
 
 __BLANK_LINE__
 
+typedef enum {
+        LC_ERR_NONE,
+        LC_ERR_INVCMD,
+        LC_ERR_INVSECTION,
+        LC_ERR_INVDATA,
+        LC_ERR_BADFORMAT,
+        LC_ERR_CANTOPEN,
+        LC_ERR_CALLBACK,
+} lc_err_t;
+
+__BLANK_LINE__
+
 int lc_process(int argc, char **argv, const char *appname, lc_conf_type_t type, const char *extra);
-int lc_register_callback(const char *var, int (*callback)(const char *, const char *, lc_flags_t));
+int lc_register_callback(const char *var, char opt, lc_var_type_t type, int (*callback)(const char *, const char *, const char *, const char *, lc_flags_t, void *), void *extra);
 int lc_register_var(const char *var, lc_var_type_t type, void *data, char opt);
+lc_err_t lc_geterrno(void);
+char *lc_geterrstr(void);
+
+__BLANK_LINE__
+
+!define LC_CBRET_IGNORESECTION (255)
+!define LC_CBRET_OKAY (0)
+!define LC_CBRET_ERROR (-1)
 
 __BLANK_LINE__
 

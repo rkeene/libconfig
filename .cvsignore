@@ -8,3 +8,8 @@ Makefile
 test-lc
 test.cfg
 .*.swp
+lc_geterrstr.3
+lc_register_var.3
+lc_register_callback.3
+lc_process.3
+lc_geterrno.3

@@ -3,9 +3,12 @@
 
 #include "libconfig.h"
 
+extern lc_err_t lc_errno;
+
 int lc_process_var(const char *var, const char *varargs, const char *value, lc_flags_t flags);
 
 struct lc_varhandler_st;
+
 struct lc_varhandler_st {
 	struct lc_varhandler_st *_next;
 	char *var;
@@ -15,10 +18,9 @@ struct lc_varhandler_st {
 		LC_MODE_CALLBACK,
 		LC_MODE_VAR
 	} mode;
-	union {
-		int (*callback)();
-		void *data;
-	};
+	int (*callback)();
+	void *data;
+	void *extra;
 };
 
 #endif

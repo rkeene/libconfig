@@ -20,7 +20,7 @@ VERS=""
 #     @@UTIL@@ becomes the utility name ${UTIL}
 #     @@VERS@@ becomes the utility version
 #     @@DATE@@ becomes the current date
-DOCS="README"
+DOCS="README Docs/USAGE"
 DOC_HDR="HEADER"
 
 # This script is executed immediately after copying the files

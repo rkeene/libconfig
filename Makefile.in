@@ -1,4 +1,5 @@
 CC = @CC@
+LN_S = @LN_S@
 AR = @AR@
 RANLIB = @RANLIB@
 CPP = @CPP@
@@ -14,6 +15,8 @@ SHOBJLDFLAGS = @SHOBJLDFLAGS@
 SHOBJEXT = so
 ARFLAGS = # @ARFLAGS@
 AREXT = a
+PKGVERS = @PACKAGE_VERSION@
+PKGVERSMAJOR = `echo $(PKGVERS) | cut -f 1 -d .`
 
 prefix = @prefix@
 mandir = @mandir@
@@ -43,17 +46,27 @@ libconfig.h: libconfig.h.in
 	cat $^ | $(CPP) $(CPPFLAGS) - | grep -v '^#' | grep -v '^ *$$' | sed 's/^!/#  /g;s/__BLANK_LINE__//' > $@
 
 test-lc: $(LIBS) test-lc.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -Wl,-R -Wl,. -L. -lconfig -o $@ $(filter %.c, $^)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c, $^) $(LDFLAGS) -Wl,-R -Wl,. -L. -lconfig
 
 .PHONY: clean distclean install
 clean:
 	rm -f *.o $(BINS) $(LIBS) libconfig.h *~ test-lc
 distclean: clean
-	rm -f Makefile config.h config.status config.log
+	rm -f Makefile config.h config.status config.log lc_geterrno.3 lc_process.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3
+
 
 install: all libconfig.h
+	-$(INSTALL) -d $(mandir)
+	-$(INSTALL) -d $(mandir)/man3
 	-$(INSTALL) -d $(libdir)
 	-$(INSTALL) -d $(includedir)
-	$(INSTALL) -m 755 libconfig.$(SHOBJEXT) $(libdir)/libconfig.$(SHOBJEXT)
+	$(INSTALL) -m 755 libconfig.$(SHOBJEXT) $(libdir)/libconfig.$(SHOBJEXT).$(PKGVERS)
 	$(INSTALL) -m 644 libconfig.$(AREXT) $(libdir)/libconfig.$(AREXT)
+	$(INSTALL) -m 644 lc_register_callback.3 $(mandir)/man3/lc_register_callback.3
+	$(INSTALL) -m 644 lc_register_var.3 $(mandir)/man3/lc_register_var.3
+	$(INSTALL) -m 644 lc_geterrstr.3 $(mandir)/man3/lc_geterrstr.3
+	$(INSTALL) -m 644 lc_geterrno.3 $(mandir)/man3/lc_geterrno.3
+	$(INSTALL) -m 644 lc_process.3 $(mandir)/man3/lc_process.3
 	$(INSTALL) -m 644 libconfig.h $(includedir)/libconfig.h
+	-( cd $(libdir) && rm -f libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) )
+	-( cd $(libdir) && rm -f libconfig.$(SHOBJEXT) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT) )

@@ -12,13 +12,6 @@
 #define LC_LINEBUF_LEN 1024
 #endif
 
-#ifndef HAVE_GETOPT
-#include "getopt.h"
-#else
-#ifdef HAVE_GETOPT_H
-#include <getopt.h>
-#endif
-#endif
 #ifndef HAVE_STRSEP
 #include "strsep.h"
 #endif
@@ -98,12 +91,14 @@
 #define CHECKPOINT PRINTERR_D("*** CHECKPOINT REACHED ***")
 #define SPOTVAR_LLX(x) PRINTERR_D(#x " = %llx", x)
 #define SPOTVAR_LLU(x) PRINTERR_D(#x " = %llu", x)
+#define SPOTVAR_LL(x) PRINTERR_D(#x " = %lli", x)
 #define SPOTVAR_LU(x) PRINTERR_D(#x " = %lu", x)
 #define SPOTVAR_D(x) PRINTERR_D(#x " = %lf", x)
 #define SPOTVAR_X(x) PRINTERR_D(#x " = 0x%x", x)
 #define SPOTVAR_I(x) PRINTERR_D(#x " = %i", x)
 #define SPOTVAR_P(x) PRINTERR_D(#x " = %p", x)
 #define SPOTVAR_S(x) PRINTERR_D(#x " = \"%s\"", x)
+#define SPOTVAR_C(x) PRINTERR_D(#x " = \'%c\'", x)
 #define PRINTERR(x...) { PRINT_LINE; fprintf(stderr, x); fprintf(stderr, "\n"); fflush(stderr); }
 #define LOG(x...) { PRINT_LINE; fprintf(stderr, "LOG: " x); fprintf(stderr, "\n"); }
 

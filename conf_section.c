@@ -19,14 +19,19 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 	char *currsection = NULL;
 	char *fgetsret = NULL;
 	int lcpvret = -1;
+	int invalid_section = 1, ignore_section = 0;
+	int retval = 0;
+	lc_err_t save_lc_errno = LC_ERR_NONE;
 
 	if (appname == NULL || configfile == NULL) {
+		lc_errno = LC_ERR_INVDATA;
 		return(-1);
 	}
 
 	configfp = fopen(configfile, "r");
 
 	if (configfp == NULL) {
+		lc_errno = LC_ERR_CANTOPEN;
 		return(-1);
 	}
 
@@ -65,6 +70,16 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 			lcpvret = lc_process_var(currsection, NULL, NULL, LC_FLAGS_SECTIONSTART);
 			if (lcpvret < 0) {
 				PRINTERR_D("Invalid section: \"%s\"", currsection);
+				invalid_section = 1;
+				lc_errno = LC_ERR_INVSECTION;
+				retval = -1;
+			} else {
+				invalid_section = 0;
+				ignore_section = 0;
+			}
+
+			if (lcpvret == LC_CBRET_IGNORESECTION) {
+				ignore_section = 1;
 			}
 			continue;
 		}
@@ -77,6 +92,18 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 
 		/* Drop comments and blank lines. */
 		if (*linebuf_ptr == ';' || *linebuf_ptr == '\0') {
+			continue;
+		}
+
+		/* Don't handle things for a section that doesn't exist. */
+		if (invalid_section == 1) {
+			PRINTERR_D("Ignoring line (because invalid section): %s", linebuf);
+			continue;
+		}
+
+		/* Don't process commands if this section is specifically ignored. */
+		if (ignore_section == 1) {
+			PRINTERR_D("Ignoring line (because ignored section): %s", linebuf);
 			continue;
 		}
 
@@ -112,9 +139,19 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 		}
 
 		/* Call the parent and tell them we have data. */
+		save_lc_errno = lc_errno;
+		lc_errno = LC_ERR_NONE;
 		lcpvret = lc_process_var(qualifbuf, NULL, value, LC_FLAGS_VAR);
 		if (lcpvret < 0) {
-			PRINTERR_D("Invalid command: \"%s\"", qualifbuf);
+			if (lc_errno == LC_ERR_NONE) {
+				PRINTERR_D("Invalid command: \"%s\"", cmd);
+				lc_errno = LC_ERR_INVCMD;
+			} else {
+				PRINTERR_D("Error processing command (command was valid, but an error occured, errno was set)");
+			}
+			retval = -1;
+		} else {
+			lc_errno = save_lc_errno;
 		}
 	}
 
@@ -129,5 +166,5 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 
 	fclose(configfp);
 
-	return(0);
+	return(retval);
 }
