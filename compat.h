@@ -12,8 +12,8 @@
 #define LC_LINEBUF_LEN 1024
 #endif
 
-#ifndef HAVE_STRTOULL
-#include "strtoull.h"
+#ifndef HAVE_STRTOLL
+#include "strtoll.h"
 #endif
 #ifndef HAVE_STRSEP
 #include "strsep.h"

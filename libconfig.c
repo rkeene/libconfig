@@ -55,7 +55,7 @@ static int lc_process_var_longlong(void *data, const char *value) {
 	long long *dataval;
 
 	dataval = data;
-	*dataval = strtoull(value, NULL, 10);
+	*dataval = strtoll(value, NULL, 10);
 
 	return(0);
 }
@@ -64,7 +64,7 @@ static int lc_process_var_long(void *data, const char *value) {
 	long *dataval;
 
 	dataval = data;
-	*dataval = strtoull(value, NULL, 10);
+	*dataval = strtoll(value, NULL, 10);
 
 	return(0);
 }
@@ -73,7 +73,7 @@ static int lc_process_var_int(void *data, const char *value) {
 	int *dataval;
 
 	dataval = data;
-	*dataval = strtoull(value, NULL, 10);
+	*dataval = strtoll(value, NULL, 10);
 
 	return(0);
 }
@@ -82,7 +82,7 @@ static int lc_process_var_short(void *data, const char *value) {
 	short *dataval;
 
 	dataval = data;
-	*dataval = strtoull(value, NULL, 10);
+	*dataval = strtoll(value, NULL, 10);
 
 	return(0);
 }
@@ -130,7 +130,7 @@ static long long lc_process_size(const char *value) {
 	long long retval = -1;
 	char *mult = NULL;
 
-	retval = strtoull(value, &mult, 10);
+	retval = strtoll(value, &mult, 10);
 	if (mult != NULL) {
 		switch (tolower(mult[0])) {
 			case 'p':
