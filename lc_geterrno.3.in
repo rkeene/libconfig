@@ -50,7 +50,6 @@ Memory could not be allocated for internal structures.
 #include <stdlib.h>
 #include <stdio.h>
 
-
 int main(int argc, char **argv) {
 	int lc_p_ret, lc_rv_ret;
 	char *filename = NULL;
@@ -86,5 +85,4 @@ int main(int argc, char **argv) {
 .BR lc_register_var (3),
 .BR lc_register_callback (3),
 .BR lc_geterrstr (3),
-.BR lc_process (3),
-.BR lc_register_var (3)
+.BR lc_process (3)

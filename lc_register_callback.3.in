@@ -5,7 +5,7 @@ lc_register_callback \- Register a function for callback in config processing.
 .SH SYNOPSIS
 .B #include <libconfig.h>
 .sp
-.BI "int lc_register_callback(const char *" var ", char " opt ", lc_var_type_t " type ", int (*callback)(const char *, const char *, const char *, const char *, lc_flags_t, void *), void *" extra);
+.BI "int lc_register_callback(const char *" var ", char " opt ", lc_var_type_t " type ", int (*" callback ")(const char *, const char *, const char *, const char *, lc_flags_t, void *), void *" extra ");"
 
 .SH DESCRIPTION
 The
@@ -156,7 +156,7 @@ Returnning LC_CBRET_ERROR from a callback indicates that the command failed for 
 call that began processing the configuration data.  If LC_CBRET_ERROR is returned from a callback that begins a section, the entire section is ignored.
 
 
- "RETURN VALUE"
+.SH "RETURN VALUE"
 On success 0 is returned, otherwise -1 is returned.
 
 .SH EXAMPLE
@@ -225,5 +225,4 @@ Memory could not be allocated to create the needed internal structures.
 .BR lc_register_var (3),
 .BR lc_geterrno (3),
 .BR lc_geterrstr (3),
-.BR lc_process (3),
-.BR lc_register_var (3)
+.BR lc_process (3)
