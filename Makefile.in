@@ -35,10 +35,10 @@ SHOBJS = libconfig_shr.o conf_space_shr.o conf_section_shr.o conf_apache_shr.o c
 
 all: $(LIBS) $(BINS)
 libconfig.$(SHOBJEXT): $(SHOBJS)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $^
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $?
 
 libconfig.$(AREXT): $(OBJS)
-	$(AR) rcu $@ $^
+	$(AR) rcu $@ $?
 	-$(RANLIB) $@
 
 libconfig.o: libconfig.c compat.h win32.h config.h libconfig.h
@@ -46,13 +46,13 @@ libconfig_shr.o: libconfig.c compat.h win32.h config.h libconfig.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) -c -o $@ libconfig.c
 
 %_shr.o: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) -c -o $@ $^
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) -c -o $@ $?
 
 libconfig.h: libconfig.h.in
-	cat $^ | $(CPP) $(CPPFLAGS) - | grep -v '^#' | grep -v '^ *$$' | sed 's/^!/#  /g;s/__BLANK_LINE__//' > $@
+	cat $? | $(CPP) $(CPPFLAGS) - | grep -v '^#' | grep -v '^ *$$' | sed 's/^!/#  /g;s/__BLANK_LINE__//' > $@
 
 test-lc: $(LIBS) test-lc.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c, $^) $(LDFLAGS) -Wl,-R -Wl,. -L. -lconfig
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c, $?) $(LDFLAGS) -Wl,-R -Wl,. -L. -lconfig
 
 .PHONY: clean distclean install
 clean:
