@@ -56,18 +56,23 @@ int unrestst(void);], [ printf("okay\n"); unrestst(); return(0); ], [ SHOBJFLAGS
 
 AC_DEFUN(DC_GET_SHOBJFLAGS, [
   AC_SUBST(SHLIBOBJS)
+  AC_SUBST(SHOBJFLAGS)
+  AC_SUBST(SHOBJLDFLAGS)
 
   AC_MSG_CHECKING(how to create shared objects)
 
-  DC_TEST_SHOBJFLAGS([-shared -fPIC], [-rdynamic], [
-    DC_TEST_SHOBJFLAGS([-shared -fPIC], [], [
-      DC_TEST_SHOBJFLAGS([-shared -fPIC], [-rdynamic -mimpure-text], [
-        DC_TEST_SHOBJFLAGS([-shared -fPIC], [-mimpure-text], [
-          DC_TEST_SHOBJFLAGS([-shared -fPIC], [-rdynamic -Wl,-G,-z,textoff], [
-            DC_TEST_SHOBJFLAGS([-shared -fPIC], [-Wl,-G,-z,textoff], [
-              DC_TEST_SHOBJFLAGS([-shared -fPIC], [-dynamiclib -flat_namespace -undefined suppress -bind_at_load], [
-                DC_TEST_SHOBJFLAGS([-fPIC], [-dynamiclib -flat_namespace -undefined suppress -bind_at_load], [
-                  AC_MSG_ERROR(cant)
+  if test -z "$SHOBJFLAGS" -a -z "$SHOBJLDFLAGS"; then
+    DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-shared -rdynamic], [
+      DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-shared], [
+        DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-shared -rdynamic -mimpure-text], [
+          DC_TEST_SHOBJFLAGS([fPIC -DPIC], [-shared -mimpure-text], [
+            DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-shared -rdynamic -Wl,-G,-z,textoff], [
+              DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-shared -Wl,-G,-z,textoff], [
+                DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-shared -dynamiclib -flat_namespace -undefined suppress -bind_at_load], [
+                  DC_TEST_SHOBJFLAGS([-fPIC -DPIC], [-dynamiclib -flat_namespace -undefined suppress -bind_at_load], [
+                    AC_MSG_RESULT(cant)
+                    AC_MSG_ERROR([We are unable to make shared objects.])
+                  ])
                 ])
               ])
             ])
@@ -75,7 +80,7 @@ AC_DEFUN(DC_GET_SHOBJFLAGS, [
         ])
       ])
     ])
-  ])
+  fi
 
   for obj in $LIB@&t@OBJS; do
     SHLIBOBJS="$SHLIBOBJS `echo $obj | sed 's/\.o$/_shr.o/g'`"
@@ -83,7 +88,6 @@ AC_DEFUN(DC_GET_SHOBJFLAGS, [
 
   AC_MSG_RESULT($SHOBJLDFLAGS $SHOBJFLAGS)
 ])
-
 
 AC_DEFUN(DC_CHK_OS_INFO, [
 	AC_CANONICAL_HOST
@@ -103,6 +107,11 @@ AC_DEFUN(DC_CHK_OS_INFO, [
 		hpux*)
 			SHOBJEXT="sl"
 			;;
+                mingw32msvc*)
+                        SHOBJEXT="dll"
+                        SHOBJFLAGS="-mno-cygwin -mms-bitfields -DPIC"
+                        SHOBJLDFLAGS='-shared -Wl,--enable-auto-image-base -Wl,--output-def,$[@].def,--out-implib,$[@].a'
+                        ;;
 	esac
 ])
 
