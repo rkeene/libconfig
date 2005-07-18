@@ -52,16 +52,19 @@ static int lc_process_var_string(void *data, const char *value) {
 }
 
 static int lc_process_var_cidr(void *data, const char *value) {
-	return(0);
+	return(-1);
 }
 
 static int lc_process_var_hostname6(void *data, const char *value) {
+	return(-1);
 }
 
 static int lc_process_var_hostname4(void *data, const char *value) {
+	return(-1);
 }
 
 static int lc_process_var_ip6(void *data, const char *value) {
+	return(-1);
 }
 
 static int lc_process_var_ip4(void *data, const char *value) {
@@ -896,6 +899,8 @@ void lc_cleanup(void) {
 
 		handler = next;
 	}
+
+	varhandlers = NULL;
 
 	return;
 }
