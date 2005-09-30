@@ -17,6 +17,7 @@ ARFLAGS = # @ARFLAGS@
 AREXT = @AREXT@
 PKGVERS = @PACKAGE_VERSION@
 PKGVERSMAJOR = `echo $(PKGVERS) | cut -f 1 -d .`
+EXEEXT = @EXEEXT@
 
 prefix = @prefix@
 mandir = @mandir@

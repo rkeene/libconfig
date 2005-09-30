@@ -88,8 +88,16 @@
 #endif
 #ifdef HAVE_LIBOPENNET
 #define lc_fopen(path, mode) fopen_net(path, mode)
+#define lc_fgets(buf, size, stream) fgets_net(buf, size, stream)
+#define lc_feof(stream) feof_net(stream)
+#define lc_fclose(stream) fclose_net(stream)
+#define LC_FILE NETFILE
 #else
 #define lc_fopen(path, mode) fopen(path, mode)
+#define lc_fgets(buf, size, stream) fgets(buf, size, stream)
+#define lc_feof(stream) feof(stream)
+#define lc_fclose(stream) fclose(stream)
+#define LC_FILE FILE
 #endif
 
 #endif

@@ -12,15 +12,22 @@
 #endif
 
 int lc_process_conf_space(const char *appname, const char *configfile) {
-	FILE *configfp = NULL;
+	LC_FILE *configfp = NULL;
+	const char *local_lc_errfile;
 	char linebuf[LC_LINEBUF_LEN] = {0}, *linebuf_ptr = NULL;
 	char *cmd = NULL, *value = NULL, *sep = NULL;
 	char *fgetsret = NULL;
+	int local_lc_errline;
 	int lcpvret = -1;
 	int retval = 0;
 	lc_err_t save_lc_errno = LC_ERR_NONE;
 
+	local_lc_errfile = configfile;
+	local_lc_errline = 0;
+
 	if (appname == NULL || configfile == NULL) {
+		lc_errfile = local_lc_errfile;
+		lc_errline = local_lc_errline;
 		lc_errno = LC_ERR_INVDATA;
 		return(-1);
 	}
@@ -28,18 +35,22 @@ int lc_process_conf_space(const char *appname, const char *configfile) {
 	configfp = lc_fopen(configfile, "r");
 
 	if (configfp == NULL) {
+		lc_errfile = local_lc_errfile;
+		lc_errline = local_lc_errline;
 		lc_errno = LC_ERR_CANTOPEN;
 		return(-1);
 	}
 
 	while (1) {
-		fgetsret = fgets(linebuf, sizeof(linebuf) - 1, configfp);
+		fgetsret = lc_fgets(linebuf, sizeof(linebuf) - 1, configfp);
 		if (fgetsret == NULL) {
 			break;
 		}
-		if (feof(configfp)) {
+		if (lc_feof(configfp)) {
 			break;
 		}
+
+		local_lc_errline++;
 
 		linebuf_ptr = &linebuf[strlen(linebuf) - 1];
 		while (*linebuf_ptr < ' ' && linebuf_ptr >= linebuf) {
@@ -84,13 +95,15 @@ int lc_process_conf_space(const char *appname, const char *configfile) {
 				fprintf(stderr, "Error processing command (command was valid, but an error occured, errno was set)\n");
 #endif
 			}
+			lc_errfile = local_lc_errfile;
+			lc_errline = local_lc_errline;
 			retval = -1;
 		} else {
 			lc_errno = save_lc_errno;
 		}
 	}
 
-	fclose(configfp);
+	lc_fclose(configfp);
 
 	return(retval);
 }

@@ -1,5 +1,5 @@
 AC_REVISION($Revision $)
-AC_INIT(libconfig, 0.1.18)
+AC_INIT(libconfig, 0.1.19)
 AC_CONFIG_HEADER(config.h)
 
 dnl Find out about the host OS

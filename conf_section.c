@@ -12,7 +12,8 @@
 #endif
 
 int lc_process_conf_section(const char *appname, const char *configfile) {
-	FILE *configfp = NULL;
+	LC_FILE *configfp = NULL;
+	const char *local_lc_errfile;
 	char linebuf[LC_LINEBUF_LEN] = {0}, *linebuf_ptr = NULL;
 	char qualifbuf[LC_LINEBUF_LEN] = {0};
 	char *cmd = NULL, *value = NULL, *sep = NULL, *cmdend = NULL;
@@ -20,10 +21,16 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 	char *fgetsret = NULL;
 	int lcpvret = -1;
 	int invalid_section = 1, ignore_section = 0;
+	int local_lc_errline;
 	int retval = 0;
 	lc_err_t save_lc_errno = LC_ERR_NONE;
 
+	local_lc_errfile = configfile;
+	local_lc_errline = 0;
+
 	if (appname == NULL || configfile == NULL) {
+		lc_errfile = local_lc_errfile;
+		lc_errline = local_lc_errline;
 		lc_errno = LC_ERR_INVDATA;
 		return(-1);
 	}
@@ -31,18 +38,22 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 	configfp = lc_fopen(configfile, "r");
 
 	if (configfp == NULL) {
+		lc_errfile = local_lc_errfile;
+		lc_errline = local_lc_errline;
 		lc_errno = LC_ERR_CANTOPEN;
 		return(-1);
 	}
 
 	while (1) {
-		fgetsret = fgets(linebuf, sizeof(linebuf) - 1, configfp);
+		fgetsret = lc_fgets(linebuf, sizeof(linebuf) - 1, configfp);
 		if (fgetsret == NULL) {
 			break;
 		}
-		if (feof(configfp)) {
+		if (lc_feof(configfp)) {
 			break;
 		}
+
+		local_lc_errline++;
 
 		/* Remove trailing crap (but not spaces). */
 		linebuf_ptr = &linebuf[strlen(linebuf) - 1];
@@ -75,6 +86,8 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 				fprintf(stderr, "Invalid section: \"%s\"\n", currsection);
 #endif
 				invalid_section = 1;
+				lc_errfile = local_lc_errfile;
+				lc_errline = local_lc_errline;
 				lc_errno = LC_ERR_INVSECTION;
 				retval = -1;
 			} else {
@@ -163,6 +176,8 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 				fprintf(stderr, "Error processing command (command was valid, but an error occured, errno was set)\n");
 #endif
 			}
+			lc_errfile = local_lc_errfile;
+			lc_errline = local_lc_errline;
 			retval = -1;
 		} else {
 			lc_errno = save_lc_errno;
@@ -180,7 +195,7 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 		free(currsection);
 	}
 
-	fclose(configfp);
+	lc_fclose(configfp);
 
 	return(retval);
 }

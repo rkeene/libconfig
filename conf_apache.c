@@ -81,7 +81,8 @@ static int lc_process_conf_apache_include(const char *pathname, const char *path
 }
 
 static int lc_process_conf_apache_file(const char *configfile, const char *pathprefix) {
-	FILE *configfp = NULL;
+	LC_FILE *configfp = NULL;
+	const char *local_lc_errfile;
 	char linebuf[LC_LINEBUF_LEN] = {0}, *linebuf_ptr = NULL, *tmp_ptr = NULL;
 	char *lastsection = NULL;
 	char qualifbuf[LC_LINEBUF_LEN] = {0};
@@ -89,6 +90,7 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 	char *fgetsret = NULL;
 	int lcpvret = -1, lpcafret = -1;
 	int invalid_section = 0, ignore_section = 0;
+	int local_lc_errline;
 	int retval = 0;
 	lc_err_t save_lc_errno = LC_ERR_NONE;
 
@@ -97,7 +99,12 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 		strncpy(qualifbuf, pathprefix, sizeof(qualifbuf) - 1);
 	}
 
+	local_lc_errfile = configfile;
+	local_lc_errline = 0;
+
 	if (configfile == NULL) {
+		lc_errfile = local_lc_errfile;
+		lc_errline = local_lc_errline;
 		lc_errno = LC_ERR_INVDATA;
 		return(-1);
 	}
@@ -105,18 +112,22 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 	configfp = lc_fopen(configfile, "r");
 
 	if (configfp == NULL) {
+		lc_errfile = local_lc_errfile;
+		lc_errline = local_lc_errline;
 		lc_errno = LC_ERR_CANTOPEN;
 		return(-1);
 	}
 
 	while (1) {
-		fgetsret = fgets(linebuf, sizeof(linebuf) - 1, configfp);
+		fgetsret = lc_fgets(linebuf, sizeof(linebuf) - 1, configfp);
 		if (fgetsret == NULL) {
 			break;
 		}
-		if (feof(configfp)) {
+		if (lc_feof(configfp)) {
 			break;
 		}
+
+		local_lc_errline++;
 
 		/* Remove trailing crap (but not spaces). */
 		linebuf_ptr = &linebuf[strlen(linebuf) - 1];
@@ -164,6 +175,8 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 					fprintf(stderr, "Last opened = \"%s\", Closing = \"%s\"\n", lastsection, cmd);
 #endif
 					retval = -1;
+					lc_errfile = local_lc_errfile;
+					lc_errline = local_lc_errline;
 					lc_errno = LC_ERR_BADFORMAT;
 
 					/* For this error, we abort immediately. */
@@ -232,6 +245,8 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 				fprintf(stderr, "Invalid section: \"%s\"\n", qualifbuf);
 #endif
 				invalid_section = 1;
+				lc_errfile = local_lc_errfile;
+				lc_errline = local_lc_errline;
 				lc_errno = LC_ERR_INVSECTION;
 				retval = -1;
 			}
@@ -288,6 +303,8 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 		/* Handle special commands. */
 		if (strcasecmp(cmd, "include") == 0) {
 			if (value == NULL) {
+				lc_errfile = local_lc_errfile;
+				lc_errline = local_lc_errline;
 				lc_errno = LC_ERR_BADFORMAT;
 				retval = -1;
 #ifdef DEBUG
@@ -327,6 +344,8 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 				fprintf(stderr, "Error processing command (command was valid, but an error occured, errno was set)\n");
 #endif
 			}
+			lc_errfile = local_lc_errfile;
+			lc_errline = local_lc_errline;
 			retval = -1;
 		} else {
 			lc_errno = save_lc_errno;
@@ -340,7 +359,7 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 		*tmp_ptr = '\0';
 	}
 
-	fclose(configfp);
+	lc_fclose(configfp);
 
 	return(retval);
 }

@@ -4,6 +4,8 @@
 #include "libconfig.h"
 
 extern lc_err_t lc_errno;
+extern int lc_errline;
+extern const char *lc_errfile;
 
 int lc_process_var(const char *var, const char *varargs, const char *value, lc_flags_t flags);
 

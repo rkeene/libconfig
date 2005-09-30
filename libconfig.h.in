@@ -1,9 +1,13 @@
 !ifndef _RSK_LIBCONFIG_H
 !define _RSK_LIBCONFIG_H
-
 !ifdef __cplusplus
 extern "C" {
 !endif
+
+__BLANK_LINE__
+
+!define LC_VAR_LIST 0x80
+
 __BLANK_LINE__
 
 typedef enum {
@@ -39,12 +43,12 @@ typedef enum {
         LC_VAR_SECTIONEND,
         LC_VAR_BOOL_BY_EXISTANCE,
         LC_VAR_SIZE_SIZE_T,
-	LC_VAR_CIDR,
-	LC_VAR_IP,
-	LC_VAR_IP4,
-	LC_VAR_IP6,
-	LC_VAR_HOSTNAME4,
-	LC_VAR_HOSTNAME6,
+        LC_VAR_CIDR,
+        LC_VAR_IP,
+        LC_VAR_IP4,
+        LC_VAR_IP6,
+        LC_VAR_HOSTNAME4,
+        LC_VAR_HOSTNAME6,
 } lc_var_type_t;
 
 __BLANK_LINE__
@@ -91,8 +95,8 @@ __BLANK_LINE__
 extern int lc_optind;
 
 __BLANK_LINE__
+
 !ifdef __cplusplus
 }
 !endif
-
 !endif

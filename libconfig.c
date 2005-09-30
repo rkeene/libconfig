@@ -38,36 +38,40 @@
 
 struct lc_varhandler_st *varhandlers = NULL;
 lc_err_t lc_errno = LC_ERR_NONE;
+const char *lc_errfile = NULL;
 int lc_optind = 0;
+int lc_errline = 0;
 
 extern char **environ;
 
-static int lc_process_var_string(void *data, const char *value) {
+static int lc_process_var_string(void *data, const char *value, const char **endptr) {
 	char **dataval;
 
 	dataval = data;
 	*dataval = strdup(value);
 
+	*endptr = NULL;
+
 	return(0);
 }
 
-static int lc_process_var_cidr(void *data, const char *value) {
+static int lc_process_var_cidr(void *data, const char *value, const char **endptr) {
 	return(-1);
 }
 
-static int lc_process_var_hostname6(void *data, const char *value) {
+static int lc_process_var_hostname6(void *data, const char *value, const char **endptr) {
 	return(-1);
 }
 
-static int lc_process_var_hostname4(void *data, const char *value) {
+static int lc_process_var_hostname4(void *data, const char *value, const char **endptr) {
 	return(-1);
 }
 
-static int lc_process_var_ip6(void *data, const char *value) {
+static int lc_process_var_ip6(void *data, const char *value, const char **endptr) {
 	return(-1);
 }
 
-static int lc_process_var_ip4(void *data, const char *value) {
+static int lc_process_var_ip4(void *data, const char *value, const char **endptr) {
 	uint32_t *dataval, retval = 0;
 	const char *dotptr = NULL;
 	int tmpval = -1;
@@ -98,86 +102,130 @@ static int lc_process_var_ip4(void *data, const char *value) {
 
 	*dataval = retval;
 
+	*endptr = (char *) dotptr;
+
 	return(0);
 }
 
-static int lc_process_var_longlong(void *data, const char *value) {
+static int lc_process_var_longlong(void *data, const char *value, const char **endptr) {
 	long long *dataval;
 
 	dataval = data;
-	*dataval = strtoll(value, NULL, 10);
+	*dataval = strtoll(value, (char **) endptr, 10);
 
 	return(0);
 }
 
-static int lc_process_var_long(void *data, const char *value) {
+static int lc_process_var_long(void *data, const char *value, const char **endptr) {
 	long *dataval;
 
 	dataval = data;
-	*dataval = strtoll(value, NULL, 10);
+	*dataval = strtoll(value, (char **) endptr, 10);
 
 	return(0);
 }
 
-static int lc_process_var_int(void *data, const char *value) {
+static int lc_process_var_int(void *data, const char *value, const char **endptr) {
 	int *dataval;
 
 	dataval = data;
-	*dataval = strtoll(value, NULL, 10);
+	*dataval = strtoll(value, (char **) endptr, 10);
 
 	return(0);
 }
 
-static int lc_process_var_short(void *data, const char *value) {
+static int lc_process_var_short(void *data, const char *value, const char **endptr) {
 	short *dataval;
 
 	dataval = data;
-	*dataval = strtoll(value, NULL, 10);
+	*dataval = strtoll(value, (char **) endptr, 10);
 
 	return(0);
 }
 
-static int lc_process_var_bool_byexistance(void *data, const char *value) {
+static int lc_process_var_bool_byexistance(void *data, const char *value, const char **endptr) {
 	int *dataval;
 
 	dataval = data;
 
 	*dataval = 1;
 
+	*endptr = NULL;
+
 	return(0);
 }
 
-static int lc_process_var_bool(void *data, const char *value) {
+static int lc_process_var_bool(void *data, const char *value, const char **endptr) {
+	char *trueval[] = {"enable", "true", "yes", "on", "y", "1"};
+	char *falseval[] = {"disable", "false", "no", "off", "n", "0"};
+	size_t chkvallen, vallen;
 	int *dataval;
+	int i;
 
 	dataval = data;
 
 	*dataval = -1;
 
-	if (strcasecmp(value, "enable") == 0 ||
-	    strcasecmp(value, "true") == 0 ||
-	    strcasecmp(value, "yes") == 0 ||
-	    strcasecmp(value, "on") == 0 ||
-            strcasecmp(value, "y") == 0 ||
-	    strcasecmp(value, "1") == 0) {
-		*dataval = 1;
-		return(0);
-	} else if (strcasecmp(value, "disable") == 0 ||
-	    strcasecmp(value, "false") == 0 ||
-	    strcasecmp(value, "off") == 0 ||
-	    strcasecmp(value, "no") == 0 ||
-            strcasecmp(value, "n") == 0 ||
-	    strcasecmp(value, "0") == 0) {
-		*dataval = 0;
-		return(0);
+	vallen = strlen(value);
+
+	for (i = 0; i < (sizeof(trueval) / sizeof(*trueval)); i++) {
+		chkvallen = strlen(trueval[i]);
+
+		/*
+		 * Skip if there's no way we could find a match here.
+		 */
+		if (chkvallen > vallen) {
+			continue;
+		}
+
+		/*
+		 * Skip if there is no partial match.
+		 */
+		if (strncasecmp(value, trueval[i], chkvallen) != 0) {
+			continue;
+		}
+
+		if (value[chkvallen] == '\0' || value[chkvallen] == ',' || \
+		    value[chkvallen] == ' ') {
+			/* Declare a winner and set the next token. */
+			*endptr = value + chkvallen;
+			*dataval = 1;
+			return(0);
+		}
+	}
+
+	for (i = 0; i < (sizeof(falseval) / sizeof(*falseval)); i++) {
+		chkvallen = strlen(falseval[i]);
+
+		/*
+		 * Skip if there's no way we could find a match here.
+		 */
+		if (chkvallen > vallen) {
+			continue;
+		}
+
+		/*
+		 * Skip if there is no partial match.
+		 */
+		if (strncasecmp(value, falseval[i], chkvallen) != 0) {
+			continue;
+		}
+
+		if (value[chkvallen] == '\0' || value[chkvallen] == ',' || \
+		    value[chkvallen] == ' ') {
+			/* Declare a winner and set the next token. */
+			*endptr = value + chkvallen;
+			*dataval = 0;
+			return(0);
+		}
 	}
 
 	lc_errno = LC_ERR_BADFORMAT;
 	return(-1);
 }
 
-static long long lc_process_size(const char *value) {
-	long long retval = -1;
+static unsigned long long lc_process_size(const char *value, const char **endptr) {
+	unsigned long long retval = 0;
 	char *mult = NULL;
 
 	retval = strtoll(value, &mult, 10);
@@ -206,105 +254,113 @@ static long long lc_process_size(const char *value) {
 	return(retval);
 }
 
-static int lc_process_var_sizelonglong(void *data, const char *value) {
+static int lc_process_var_sizelonglong(void *data, const char *value, const char **endptr) {
 	long long *dataval;
 
 	dataval = data;
-	*dataval = lc_process_size(value);
+	*dataval = lc_process_size(value, endptr);
 
 	return(0);
 }
 
-static int lc_process_var_sizelong(void *data, const char *value) {
+static int lc_process_var_sizelong(void *data, const char *value, const char **endptr) {
 	long *dataval;
 
 	dataval = data;
-	*dataval = lc_process_size(value);
+	*dataval = lc_process_size(value, endptr);
 
 	return(0);
 }
 
-static int lc_process_var_sizeint(void *data, const char *value) {
+static int lc_process_var_sizeint(void *data, const char *value, const char **endptr) {
 	int *dataval;
 
 	dataval = data;
-	*dataval = lc_process_size(value);
+	*dataval = lc_process_size(value, endptr);
 
 	return(0);
 }
 
-static int lc_process_var_sizeshort(void *data, const char *value) {
+static int lc_process_var_sizeshort(void *data, const char *value, const char **endptr) {
 	short *dataval;
 
 	dataval = data;
-	*dataval = lc_process_size(value);
+	*dataval = lc_process_size(value, endptr);
 
 	return(0);
 }
 
-static int lc_process_var_sizesizet(void *data, const char *value) {
+static int lc_process_var_sizesizet(void *data, const char *value, const char **endptr) {
 	size_t *dataval;
 
 	dataval = data;
-	*dataval = lc_process_size(value);
+	*dataval = lc_process_size(value, endptr);
 
 	return(0);
 }
 
 
 static int lc_handle_type(lc_var_type_t type, const char *value, void *data) {
+	const char *next;
+	int is_list;
+
+	is_list = type & LC_VAR_LIST;
+
+	if (is_list == LC_VAR_LIST) {
+	}
+
 	switch (type) {
 		case LC_VAR_STRING:
-			return(lc_process_var_string(data, value));
+			return(lc_process_var_string(data, value, &next));
 			break;
 		case LC_VAR_LONG_LONG:
-			return(lc_process_var_longlong(data, value));
+			return(lc_process_var_longlong(data, value, &next));
 			break;
 		case LC_VAR_LONG:
-			return(lc_process_var_long(data, value));
+			return(lc_process_var_long(data, value, &next));
 			break;
 		case LC_VAR_INT:
-			return(lc_process_var_int(data, value));
+			return(lc_process_var_int(data, value, &next));
 			break;
 		case LC_VAR_SHORT:
-			return(lc_process_var_short(data, value));
+			return(lc_process_var_short(data, value, &next));
 			break;
 		case LC_VAR_BOOL:
-			return(lc_process_var_bool(data, value));
+			return(lc_process_var_bool(data, value, &next));
 			break;
 		case LC_VAR_SIZE_LONG_LONG:
-			return(lc_process_var_sizelonglong(data, value));
+			return(lc_process_var_sizelonglong(data, value, &next));
 			break;
 		case LC_VAR_SIZE_LONG:
-			return(lc_process_var_sizelong(data, value));
+			return(lc_process_var_sizelong(data, value, &next));
 			break;
 		case LC_VAR_SIZE_INT:
-			return(lc_process_var_sizeint(data, value));
+			return(lc_process_var_sizeint(data, value, &next));
 			break;
 		case LC_VAR_SIZE_SHORT:
-			return(lc_process_var_sizeshort(data, value));
+			return(lc_process_var_sizeshort(data, value, &next));
 			break;
 		case LC_VAR_BOOL_BY_EXISTANCE:
-			return(lc_process_var_bool_byexistance(data, value));
+			return(lc_process_var_bool_byexistance(data, value, &next));
 			break;
 		case LC_VAR_SIZE_SIZE_T:
-			return(lc_process_var_sizesizet(data, value));
+			return(lc_process_var_sizesizet(data, value, &next));
 			break;
 		case LC_VAR_IP:
 		case LC_VAR_IP4:
-			return(lc_process_var_ip4(data, value));
+			return(lc_process_var_ip4(data, value, &next));
 			break;
 		case LC_VAR_IP6:
-			return(lc_process_var_ip6(data, value));
+			return(lc_process_var_ip6(data, value, &next));
 			break;
 		case LC_VAR_HOSTNAME4:
-			return(lc_process_var_hostname4(data, value));
+			return(lc_process_var_hostname4(data, value, &next));
 			break;
 		case LC_VAR_HOSTNAME6:
-			return(lc_process_var_hostname6(data, value));
+			return(lc_process_var_hostname6(data, value, &next));
 			break;
 		case LC_VAR_CIDR:
-			return(lc_process_var_cidr(data, value));
+			return(lc_process_var_cidr(data, value, &next));
 			break;
 		case LC_VAR_TIME:
 		case LC_VAR_DATE:
@@ -369,6 +425,8 @@ static int lc_process_environment(const char *appname) {
 	char *ucase_appname = NULL, *ucase_appname_itr = NULL;
 	char *lastcomponent_handler = NULL;
 	int varnamelen = 0;
+	char *local_lc_errfile;
+	int local_lc_errline;
 
 	/* Make sure we have an environment to screw with, if not,
 	   no arguments were found to be in error */
@@ -376,9 +434,14 @@ static int lc_process_environment(const char *appname) {
 		return(0);
 	}
 
+	local_lc_errfile = "<environment>";
+	local_lc_errline = 0;
+
 	/* Allocate and create our uppercase appname. */
 	ucase_appname = strdup(appname);
 	if (ucase_appname == NULL) {
+		lc_errfile = local_lc_errfile;
+		lc_errline = local_lc_errline;
 		lc_errno = LC_ERR_ENOMEM;
 		return(-1);
 	}
@@ -490,10 +553,17 @@ static int lc_process_cmdline(int argc, char **argv) {
 	int newargvidx = 0;
 	int retval = 0, chkretval = 0;
 	int ch = 0;
+	char *local_lc_errfile;
+	int local_lc_errline;
+
+	local_lc_errfile = "<cmdline>";
+	local_lc_errline = 0;
 
 	/* Allocate "argc + 1" (+1 for the NULL terminator) elements. */
 	newargv = malloc((argc + 1) * sizeof(*newargv));
 	if (newargv == NULL) {
+		lc_errfile = local_lc_errfile;
+		lc_errline = local_lc_errline;
 		lc_errno = LC_ERR_ENOMEM;
 		return(-1);
 	}
@@ -503,6 +573,8 @@ static int lc_process_cmdline(int argc, char **argv) {
 	/* Allocate space to indicate which arguments have been used. */
 	usedargv = malloc(argc * sizeof(*usedargv));
 	if (usedargv == NULL) {
+		lc_errfile = local_lc_errfile;
+		lc_errline = local_lc_errline;
 		lc_errno = LC_ERR_ENOMEM;
 		free(newargv);
 		return(-1);
@@ -519,7 +591,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 			break;
 		}
 
-		/* If the argument isn't an option, abort. */
+		/* If the argument isn't an option, skip. */
 		if (cmdarg[0] != '-') {
 			continue;
 		}
@@ -585,6 +657,8 @@ static int lc_process_cmdline(int argc, char **argv) {
 					cmdargidx++;
 					if (cmdargidx >= argc) {
 						fprintf(stderr, "Argument required.\n");
+						lc_errfile = local_lc_errfile;
+						lc_errline = local_lc_errline;
 						lc_errno = LC_ERR_BADFORMAT;
 						free(usedargv);
 						free(newargv);
@@ -605,6 +679,8 @@ static int lc_process_cmdline(int argc, char **argv) {
 
 			if (handler == NULL) {
 				fprintf(stderr, "Unknown option: --%s\n", cmdarg);
+				lc_errfile = local_lc_errfile;
+				lc_errline = local_lc_errline;
 				lc_errno = LC_ERR_INVCMD;
 				free(usedargv);
 				free(newargv);
@@ -633,6 +709,8 @@ static int lc_process_cmdline(int argc, char **argv) {
 						cmdargidx++;
 						if (cmdargidx >= argc) {
 							fprintf(stderr, "Argument required.\n");
+							lc_errfile = local_lc_errfile;
+							lc_errline = local_lc_errline;
 							lc_errno = LC_ERR_BADFORMAT;
 							free(usedargv);
 							free(newargv);
@@ -645,6 +723,8 @@ static int lc_process_cmdline(int argc, char **argv) {
 
 					chkretval = lc_handle(handler, handler->var, NULL, cmdoptarg, LC_FLAGS_CMDLINE);
 					if (chkretval < 0) {
+						lc_errfile = local_lc_errfile;
+						lc_errline = local_lc_errline;
 						retval = -1;
 					}
 
@@ -653,6 +733,8 @@ static int lc_process_cmdline(int argc, char **argv) {
 
 				if (handler == NULL) {
 					fprintf(stderr, "Unknown option: -%c\n", ch);
+					lc_errfile = local_lc_errfile;
+					lc_errline = local_lc_errline;
 					lc_errno = LC_ERR_INVCMD;
 					free(usedargv);
 					free(newargv);
@@ -941,39 +1023,51 @@ lc_err_t lc_geterrno(void) {
 }
 
 char *lc_geterrstr(void) {
-	char *retval = NULL;
+	static char retval[512];
+	char *errmsg = NULL;
 
 	switch (lc_errno) {
 		case LC_ERR_NONE:
-			retval = "Success";
+			errmsg = "Success";
 			break;
 		case LC_ERR_INVCMD:
-			retval = "Invalid command";
+			errmsg = "Invalid command or option";
 			break;
 		case LC_ERR_INVSECTION:
-			retval = "Invalid section";
+			errmsg = "Invalid section";
 			break;
 		case LC_ERR_INVDATA:
-			retval = "Invalid application data (internal error)";
+			errmsg = "Invalid application data (internal error)";
 			break;
 		case LC_ERR_BADFORMAT:
-			retval = "Bad data specified or incorrect format.";
+			errmsg = "Bad data specified or incorrect format.";
 			break;
 		case LC_ERR_CANTOPEN:
-			retval = "Can't open file.";
+			errmsg = "Can't open file.";
 			break;
 		case LC_ERR_CALLBACK:
-			retval = "Error return from application handler.";
+			errmsg = "Error return from application handler.";
 			break;
 		case LC_ERR_ENOMEM:
-			retval = "Insuffcient memory.";
+			errmsg = "Insuffcient memory.";
 			break;
 	}
 
-	lc_errno = LC_ERR_NONE;
-
-	if (retval != NULL) {
-		return(retval);
+	/*
+	 * This is not part of the switch statement so we will get warnings
+	 * about unhandled enum values.
+	 */
+	if (errmsg == NULL) {
+		errmsg = "Unknown error";
 	}
-	return("Unknown error");
+
+	if (lc_errfile == NULL) {
+		snprintf(retval, sizeof(retval), "%s:%i: %s", "<no file>", lc_errline, errmsg);
+	} else {
+		snprintf(retval, sizeof(retval), "%s:%i: %s", lc_errfile, lc_errline, errmsg);
+	}
+
+	retval[sizeof(retval) - 1] = '\0';
+
+	return(retval);
 }

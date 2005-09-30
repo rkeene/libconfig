@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
 	int lcpret = -1;
 	int i = 0;
 	int onoff2 = 0;
-	uint32_t ipaddr;
+	uint32_t ipaddr = 0;
 
 	lc_register_var("Section", LC_VAR_SECTION, NULL, 0);
 	lc_register_var("Somesection", LC_VAR_SECTION, NULL, 0);
@@ -48,13 +48,19 @@ int main(int argc, char **argv) {
 	lc_register_callback("sally", 0, LC_VAR_STRING, sally_cmd, NULL);
 	lc_register_callback("HELP", 'h', LC_VAR_NONE, help_cmd, NULL);
 	lc_register_callback("*.ifmodule", 0, LC_VAR_NONE, cmd_ifmodule, NULL);
-	lcpret = lc_process_file("testapp", "http://10.8.0.2/test.conf", LC_CONF_APACHE);
-	lcpret = lc_process(argc, argv, "testapp", LC_CONF_APACHE, "test.cfg");
-	lc_cleanup();
+	lcpret = lc_process_file("testapp", "build/test.conf", LC_CONF_APACHE);
 	if (lcpret < 0) {
 		fprintf(stderr, "Error processing config file: %s\n", lc_geterrstr());
 		return(EXIT_FAILURE);
 	}
+
+	lcpret = lc_process(argc, argv, "testapp", LC_CONF_APACHE, "test.cfg");
+	if (lcpret < 0) {
+		fprintf(stderr, "Error processing config file: %s\n", lc_geterrstr());
+		return(EXIT_FAILURE);
+	}
+
+	lc_cleanup();
 
 	if (joeval != NULL) {
 		fprintf(stderr, "joeval = \"%s\"\n", joeval);
