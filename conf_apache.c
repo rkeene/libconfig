@@ -93,8 +93,6 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 	int local_lc_errline;
 	int retval = 0;
 	lc_err_t save_lc_errno = LC_ERR_NONE;
-	char *local_lc_errfile;
-	int local_lc_errline;
 
 	if (pathprefix != NULL) {
 		/* Copy the prefix, if specified. */
