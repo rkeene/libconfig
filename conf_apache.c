@@ -66,6 +66,7 @@ static int lc_process_conf_apache_include(const char *pathname, const char *path
 			if (lcpcafret < 0) {
 				retval = -1;
 				/* XXX: should we break here (abort further including of files from a directory if one fails ?) */
+				break;
 			}
 		}
 
@@ -349,6 +350,7 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 			lc_errfile = local_lc_errfile;
 			lc_errline = local_lc_errline;
 			retval = -1;
+			break;
 		} else {
 			lc_errno = save_lc_errno;
 		}
