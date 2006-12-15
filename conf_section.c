@@ -139,7 +139,7 @@ int lc_process_conf_section(const char *appname, const char *configfile) {
 
 		/* Delete space at the end of the command. */
 		cmdend--; /* It currently derefs to the seperator.. */
-		while (*cmdend <= ' ') {
+		while (*cmdend <= ' ' && cmdend >= sep) {
 			*cmdend = '\0';
 			cmdend--;
 		}
