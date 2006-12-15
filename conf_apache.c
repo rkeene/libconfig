@@ -139,19 +139,19 @@ static int lc_process_conf_apache_file(const char *configfile, const char *pathp
 
 		/* Remove leading spaces. */
 		linebuf_ptr = &linebuf[0];
-		while (*linebuf_ptr == ' ' || *linebuf_ptr == '\t') {
+		while ((*linebuf_ptr == ' ' || *linebuf_ptr == '\t') && linebuf_ptr < (linebuf + sizeof(linebuf))) {
 			linebuf_ptr++;
 		}
 
 		/* Handle section header. */
-		if (linebuf_ptr[0] == '<' && linebuf_ptr[strlen(linebuf_ptr) - 1] == '>') {
+		if (linebuf_ptr[0] == '<' && linebuf_ptr[strlen(linebuf_ptr) - 1] == '>' && linebuf_ptr < (linebuf + sizeof(linebuf))) {
 			/* Remove < and > from around the data. */
 			linebuf_ptr[strlen(linebuf_ptr) - 1] = '\0';
 			linebuf_ptr++;
 
 			/* Lowercase the command part of the section. */
 			tmp_ptr = linebuf_ptr;
-			while (*tmp_ptr != '\0' && *tmp_ptr != ' ') {
+			while (*tmp_ptr != '\0' && *tmp_ptr != ' ' && tmp_ptr < (linebuf + sizeof(linebuf))) {
 				*tmp_ptr = tolower(*tmp_ptr);
 				tmp_ptr++;
 			}
