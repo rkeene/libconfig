@@ -38,6 +38,7 @@
 
 struct lc_varhandler_st *varhandlers = NULL;
 lc_err_t lc_errno = LC_ERR_NONE;
+const char *lc_err_usererrmsg = NULL;
 const char *lc_errfile = NULL;
 int lc_optind = 0;
 int lc_errline = 0;
@@ -982,6 +983,12 @@ void lc_cleanup(void) {
 		handler = next;
 	}
 
+	if (lc_err_usererrmsg) {
+		free((char *) lc_err_usererrmsg);
+
+		lc_err_usererrmsg = NULL;
+	}
+
 	varhandlers = NULL;
 
 	return;
@@ -1022,9 +1029,13 @@ lc_err_t lc_geterrno(void) {
 	return(retval);
 }
 
+void lc_seterrstr(const char *usererrmsg) {
+	lc_err_usererrmsg = strdup(usererrmsg);
+}
+
 char *lc_geterrstr(void) {
 	static char retval[512];
-	char *errmsg = NULL;
+	const char *errmsg = NULL;
 
 	switch (lc_errno) {
 		case LC_ERR_NONE:
@@ -1046,7 +1057,11 @@ char *lc_geterrstr(void) {
 			errmsg = "Can't open file.";
 			break;
 		case LC_ERR_CALLBACK:
-			errmsg = "Error return from application handler.";
+			if (lc_err_usererrmsg) {
+				errmsg = lc_err_usererrmsg;
+			} else {
+				errmsg = "Error return from application handler.";
+			}
 			break;
 		case LC_ERR_ENOMEM:
 			errmsg = "Insuffcient memory.";

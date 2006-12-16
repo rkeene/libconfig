@@ -153,7 +153,7 @@ Returning LC_CBRET_OKAY from a callback indicates that all went well and further
 LC_CBRET_ERROR
 Returnning LC_CBRET_ERROR from a callback indicates that the command failed for some reason, the error will be passed back down the chain back to the
 .BR lc_process (3)
-call that began processing the configuration data.  If LC_CBRET_ERROR is returned from a callback that begins a section, the entire section is ignored.
+call that began processing the configuration data.  If LC_CBRET_ERROR is returned from a callback that begins a section, the entire section is ignored.  If LC_CBRET_ERROR is returned from a callback that ends a section, the error is ignored.
 
 
 .SH "RETURN VALUE"
@@ -174,13 +174,13 @@ int callback_ifmodule(const char *shortvar, const char *var,
 	}
 
 	if (flags != LC_FLAGS_SECTIONSTART) {
-		fprintf(stderr, "IfModule can only be used as a \\
-		        section.\\n");
+		lc_seterrstr("IfModule can only be used as a \\
+		              section.");
 		return(LC_CBRET_ERROR);
 	}
 	if (arguments == NULL) {
-		fprintf(stderr, "You must specify an argument to \\
-		        IfModule.\\n");
+		lc_seterrstr("You must specify an argument to \\
+		              IfModule.");
 		return(LC_CBRET_ERROR);
 	}
 
@@ -225,9 +225,11 @@ int main(int argc, char **argv) {
 Memory could not be allocated to create the needed internal structures.
 
 .SH "SEE ALSO"
+.BR libconfig (3),
 .BR lc_register_var (3),
 .BR lc_geterrno (3),
 .BR lc_geterrstr (3),
+.BR lc_seterrstr (3),
 .BR lc_cleanup (3),
 .BR lc_process_file (3),
 .BR lc_process (3)

@@ -61,9 +61,11 @@ int main(int argc, char **argv) {
 .fi
 
 .SH "SEE ALSO"
+.BR libconfig (3),
 .BR lc_register_var (3),
 .BR lc_register_callback (3),
 .BR lc_geterrno (3),
 .BR lc_geterrstr (3),
+.BR lc_seterrstr (3),
 .BR lc_cleanup (3),
 .BR lc_process (3)
