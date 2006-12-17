@@ -15,7 +15,11 @@ libconfig \- Consistent configuration library.
 
 .BI "char *lc_geterrstr(void);"
 
-.BI "void lc_geterrstr(const char *" errstr ");"
+.BI "void lc_seterrstr(const char *" errstr ");"
+
+.BI "int lc_handle_type(lc_var_type_t " type ", const char *" value ", void *" data ");"
+
+.BI "void lc_cleanup(void);"
 
 .SH DESCRIPTION
 Libconfig is a library to provide easy access to configuration data in a consistent and logical manner.  Variables (registered through
@@ -77,9 +81,10 @@ int main(int argc, char **argv) {
 .SH "SEE ALSO"
 .BR lc_register_var (3),
 .BR lc_register_callback (3),
-.BR lc_geterr (3),
+.BR lc_geterrno (3),
 .BR lc_geterrstr (3),
 .BR lc_seterrstr (3),
-.BR lc_cleanup (3),
+.BR lc_handle_type (3),
 .BR lc_process (3),
-.BR lc_process_file (3)
+.BR lc_process_file (3),
+.BR lc_cleanup (3)

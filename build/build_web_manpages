@@ -8,7 +8,7 @@ if [ ! -f libconfig.3 ]; then
 	exit 1
 fi
 
-for file in lc_cleanup lc_geterrno lc_geterrstr lc_seterrstr lc_process lc_process_file lc_register_callback lc_register_var libconfig; do
+for file in lc_cleanup lc_geterrno lc_geterrstr lc_seterrstr lc_process lc_process_file lc_register_callback lc_register_var libconfig lc_handle_type; do
 	man2html -H "REPLACE" -M "/ME" < ${file}.3 | grep -iv '^Content-Type:' | sed 's@"http://REPLACE/ME?\([0-9]*\)+\([^"]*\)"@"\2.htm"@;s@http://REPLACE/ME@@g' > /web/rkeene/docs/oss/libconfig/${file}.htm
 done
 

@@ -1,38 +1,32 @@
-.TH LIBCONFIG 3 "25 Oct 04" "@PACKAGE_STRING@"
+.TH LC_HANDLE_TYPE 3 "25 Oct 04" "@PACKAGE_STRING@"
 .SH NAME
-libconfig \- Consistent configuration library.
+lc_handle_type \- Convert string representation of a value to its correct type
 
 .SH SYNOPSIS
 .B #include <libconfig.h>
 .sp
-.BI "int lc_register_callback(const char *" var ", char " opt ", lc_var_type_t " type ", int (*" callback ")(const char *, const char *, const char *, const char *, lc_flags_t, void *), void *" extra ");"
-
-.BI "int lc_register_var(const char *" var ", lc_var_type_t " type ", void *" data ", char " opt ");"
-
-.BI "int lc_process(int " argc ", char **" argv ", const char *" appname ", lc_conf_type_t " type ", const char *" extra ");"
-
-.BI "lc_err_t lc_geterrno(void);"
-
-.BI "char *lc_geterrstr(void);"
-
-.BI "void lc_geterrstr(const char *" errstr ");"
+.BI "int lc_handle_type(lc_var_type_t " type ", const char *" value ", void *" data ");"
 
 .SH DESCRIPTION
-Libconfig is a library to provide easy access to configuration data in a consistent and logical manner.  Variables (registered through
+.BR lc_handle_type (3)
+converts the string
+.I value
+to the correct type specified by the 
+.I type 
+parameter.  The result is stored in the memory region passed as
+.IR data ,
+which should be of the correct type.  For possible values for
+.I type
+and the corresponding
+.I data
+type, see the
 .BR lc_register_var (3)
-or
-.BR lc_register_callback (3))
-are processed with the
-.BR lc_process (3)
-and
-.BR lc_process_file (3)
-functions.  Errors can be examined through
-.BR lc_geterrno (3)
-and
-.BR lc_geterrstr (3).
-Clean-up may be performed using the
-.BR lc_cleanup (3)
-function.
+man page.
+
+.SH "RETURN VALUE"
+On success 0 is returned, otherwise -1 is returned.  The memory pointed to by
+.I data
+may be altered in either case.
 
 .SH EXAMPLE
 .nf
@@ -40,16 +34,37 @@ function.
 #include <stdlib.h>
 #include <stdio.h>
 
+int callback_size(const char *shortvar, const char *var,
+                  const char *arguments, const char *value,
+                  lc_flags_t flags, void *extra) {
+	size_t size;
+	int lc_ht_ret;
+
+	if (value == NULL) {
+		lc_seterrstr("You must specify an argument to \\
+		              Size.");
+		return(LC_CBRET_ERROR);
+	}
+
+	lc_ht_ret = lc_handle_type(LC_VAR_SIZE_SIZE_T, value, &size);
+	if (lc_ht_ret != 0) {
+		lc_seterrstr("Invalid size specified.");
+		return(LC_CBRET_ERROR);
+	}
+
+	printf("Size: %lu\\n", (unsigned long) size);
+
+	return(LC_CBRET_OKAY);
+}
+
 int main(int argc, char **argv) {
-	int lc_p_ret, lc_rv_ret;
-	char *filename = NULL;
+	int lc_rc_ret, lc_p_ret;
 
-	lc_rv_ret = lc_register_var("File", LC_VAR_STRING,
-	                            &filename, 'f');
+	lc_rc_ret = lc_register_callback("Size", 0, LC_VAR_SIZE_SIZE_T,
+	                                 callback_size, NULL);
 
-	if (lc_rv_ret != 0) {
-		fprintf(stderr, "Error registering variable: %i.\\n",
-		        lc_geterrno());
+	if (lc_rc_ret != 0) {
+		fprintf(stderr, "Error registering callback.\\n");
 		return(EXIT_FAILURE);
 	}
 
@@ -64,22 +79,18 @@ int main(int argc, char **argv) {
 		return(EXIT_FAILURE);
 	}
 
-	if (filename != NULL) {
-		printf("File specified was: %s\\n", filename);
-	} else {
-		printf("No filename specified.\\n");
-	}
-
 	return(EXIT_SUCCESS);
 }
 .fi
 
+
 .SH "SEE ALSO"
+.BR libconfig (3),
 .BR lc_register_var (3),
 .BR lc_register_callback (3),
-.BR lc_geterr (3),
+.BR lc_geterrno (3),
 .BR lc_geterrstr (3),
 .BR lc_seterrstr (3),
-.BR lc_cleanup (3),
 .BR lc_process (3),
-.BR lc_process_file (3)
+.BR lc_process_file (3),
+.BR lc_cleanup (3)

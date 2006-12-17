@@ -1,6 +1,6 @@
-.TH LC_GETERRSTR 3 "25 Oct 04" "@PACKAGE_STRING@"
+.TH LC_SETERRSTR 3 "25 Oct 04" "@PACKAGE_STRING@"
 .SH NAME
-lc_geterrstr \- Set an error message from a callback.
+lc_seterrstr \- Set an error message from a callback.
 
 .SH SYNOPSIS
 .B #include <libconfig.h>
@@ -17,9 +17,10 @@ function when an error is returned from a callback function.  The value is ignor
 .SH "SEE ALSO"
 .BR libconfig (3),
 .BR lc_register_var (3),
-.BR lc_register_callback (3),
-.BR lc_geterrno (3),
-.BR lc_geterrstr (3),
-.BR lc_cleanup (3),
-.BR lc_process_file (3),
-.BR lc_process (3)
+.BR lc_register_callback (3),                          
+.BR lc_geterrno (3),                                                                                                           
+.BR lc_geterrstr (3),                                                                                                          
+.BR lc_handle_type (3),
+.BR lc_process (3),                                                                                                            
+.BR lc_process_file (3),                                                                                                       
+.BR lc_cleanup (3)

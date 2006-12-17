@@ -150,10 +150,11 @@ int main(int argc, char **argv) {
 
 .SH "SEE ALSO"
 .BR libconfig (3),
-.BR lc_register_callback (3),
-.BR lc_geterrno (3),
-.BR lc_geterrstr (3),
-.BR lc_seterrstr (3),
-.BR lc_cleanup (3),
-.BR lc_process_file (3),
-.BR lc_process (3)
+.BR lc_register_callback (3),                          
+.BR lc_geterrno (3),                                                                                                           
+.BR lc_geterrstr (3),                                                                                                          
+.BR lc_seterrstr (3),                                                                                                          
+.BR lc_handle_type (3),
+.BR lc_process (3),                                                                                                            
+.BR lc_process_file (3),                                                                                                       
+.BR lc_cleanup (3)

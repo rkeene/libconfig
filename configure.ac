@@ -1,5 +1,5 @@
 AC_REVISION($Revision $)
-AC_INIT(libconfig, 0.2.0)
+AC_INIT(libconfig, 0.2.1)
 AC_CONFIG_HEADER(config.h)
 
 dnl Find out about the host OS
@@ -44,4 +44,4 @@ AC_CHECK_FUNCS(getpwuid)
 dnl This MUST be last.
 DC_SYNC_SHLIBOBJS
 
-AC_OUTPUT(Makefile lc_geterrno.3 lc_process.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 lc_cleanup.3 lc_process_file.3 libconfig.3)
+AC_OUTPUT(Makefile lc_geterrno.3 lc_process.3 lc_register_var.3 lc_geterrstr.3 lc_seterrstr.3 lc_register_callback.3 lc_cleanup.3 lc_process_file.3 libconfig.3 lc_handle_type.3)
