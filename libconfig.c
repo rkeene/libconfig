@@ -772,6 +772,9 @@ int lc_process_var(const char *var, const char *varargs, const char *value, lc_f
 	struct lc_varhandler_st *handler = NULL;
 	const char *lastcomponent_handler = NULL, *lastcomponent_var = NULL;
 
+	lc_errno = LC_ERR_NONE;
+	lc_err_usererrmsg = NULL;
+
 	lastcomponent_var = strrchr(var, '.');
 	if (lastcomponent_var == NULL) {
 		lastcomponent_var = var;
@@ -821,6 +824,9 @@ int lc_process_var(const char *var, const char *varargs, const char *value, lc_f
 int lc_register_callback(const char *var, char opt, lc_var_type_t type, int (*callback)(const char *, const char *, const char *, const char *, lc_flags_t, void *), void *extra) {
 	struct lc_varhandler_st *newhandler = NULL;
 
+	lc_errno = LC_ERR_NONE;
+	lc_err_usererrmsg = NULL;
+
 	newhandler = malloc(sizeof(*newhandler));
 
 	if (newhandler == NULL) {
@@ -847,6 +853,9 @@ int lc_register_callback(const char *var, char opt, lc_var_type_t type, int (*ca
 int lc_register_var(const char *var, lc_var_type_t type, void *data, char opt) {
 	struct lc_varhandler_st *newhandler = NULL;
 
+	lc_errno = LC_ERR_NONE;
+	lc_err_usererrmsg = NULL;
+
 	newhandler = malloc(sizeof(*newhandler));
 
 	if (newhandler == NULL) {
@@ -872,6 +881,9 @@ int lc_register_var(const char *var, lc_var_type_t type, void *data, char opt) {
 
 int lc_process_file(const char *appname, const char *pathname, lc_conf_type_t type) {
 	int chkretval = 0;
+
+	lc_errno = LC_ERR_NONE;
+	lc_err_usererrmsg = NULL;
 
 	switch (type) {
 		case LC_CONF_SECTION:
@@ -970,6 +982,9 @@ static int lc_process_files(const char *appname, lc_conf_type_t type, const char
 void lc_cleanup(void) {
 	struct lc_varhandler_st *handler = NULL, *next = NULL;
 
+	lc_errno = LC_ERR_NONE;
+	lc_err_usererrmsg = NULL;
+
 	handler = varhandlers;
 	while (handler != NULL) {
 		if (handler->var != NULL) {
@@ -1023,8 +1038,6 @@ lc_err_t lc_geterrno(void) {
 	lc_err_t retval;
 
 	retval = lc_errno;
-
-	lc_errno = LC_ERR_NONE;
 
 	return(retval);
 }
