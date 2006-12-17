@@ -36,6 +36,10 @@
 #include <pwd.h>
 #endif
 
+#ifdef HAVE_NETDB_H
+#include <netdb.h>
+#endif
+
 struct lc_varhandler_st *varhandlers = NULL;
 lc_err_t lc_errno = LC_ERR_NONE;
 const char *lc_err_usererrmsg = NULL;
@@ -60,56 +64,112 @@ static int lc_process_var_cidr(void *data, const char *value, const char **endpt
 	return(-1);
 }
 
-static int lc_process_var_addr4(uint32_t *data, const char *value, const char **endptr) {
-	return(-1);
-}
-
-static int lc_process_var_addr6(void *data, const char *value, const char **endptr) {
-	return(-1);
-}
-
 static int lc_process_var_hostname4(uint32_t *data, const char *value, const char **endptr) {
-	return(-1);
+	struct hostent *ghbn_ret;
+
+	ghbn_ret = gethostbyname(value);
+	if (ghbn_ret == NULL) {
+		return(-1);
+	}
+
+	if (ghbn_ret->h_length != 4) {
+		return(-1);
+	}
+
+	memcpy(data, ghbn_ret->h_addr_list[0], sizeof(*data));
+
+	*data = ntohl(*data);
+
+	return(0);
 }
 
 static int lc_process_var_hostname6(void *data, const char *value, const char **endptr) {
 	return(-1);
 }
 
+static int lc_process_var_ip4(uint32_t *data, const char *value, const char **endptr) {
+	uint32_t ipval = 0, curr_ipval = 0;
+	const char *valptr;
+	int retval = 0;
+	int dotcount = 0;
+
+	for (valptr = value; *valptr; valptr++) {
+		if (!isdigit(*valptr)) {
+			if (*valptr == '.' || *valptr == ',') {
+				dotcount++;
+				if (dotcount >= 4) {
+					retval = -1;
+					break;
+				}
+
+				if (curr_ipval > 255) {
+					retval = -1;
+					break;
+				}
+
+				ipval <<= 8;
+				ipval |= curr_ipval;
+				curr_ipval = 0;
+
+				/* For lists */
+				if (*valptr == ',') {
+					break;
+				}
+
+				continue;
+			} else {
+				retval = -1;
+				break;
+			}
+		}
+
+		curr_ipval *= 10;
+		curr_ipval += *valptr - '0';
+	}
+
+	if (retval == 0) {
+		ipval <<= 8;
+		ipval |= curr_ipval;
+
+		*data = ipval;
+	}
+
+	return(retval);
+}
+
 static int lc_process_var_ip6(void *data, const char *value, const char **endptr) {
 	return(-1);
 }
 
-static int lc_process_var_ip4(uint32_t *data, const char *value, const char **endptr) {
-	const char *dotptr = NULL;
-	int tmpval = -1, retval = 0;
+static int lc_process_var_addr4(uint32_t *data, const char *value, const char **endptr) {
+	int lc_pv_ret;
 
-	dotptr = value;
-
-	while (1) {
-		tmpval = atoi(dotptr);
-		if (tmpval < 0) {
-			break;
-		}
-
-		retval <<= 8;
-		retval |= tmpval;
-
-		dotptr = strpbrk(dotptr, "./ \t");
-		if (dotptr == NULL) {
-			break;
-		}
-		if (*dotptr != '.') {
-			break;
-		}
-		dotptr++;
+	lc_pv_ret = lc_process_var_ip4(data, value, endptr);
+	if (lc_pv_ret == 0) {
+		return(lc_pv_ret);
 	}
 
-	*data = retval;
+	lc_pv_ret = lc_process_var_hostname4(data, value, endptr);
+	if (lc_pv_ret == 0) {
+		return(lc_pv_ret);
+	}
 
-	*endptr = (char *) dotptr;
+	return(-1);
+}
 
-	return(0);
+static int lc_process_var_addr6(void *data, const char *value, const char **endptr) {
+	int lc_pv_ret;
+
+	lc_pv_ret = lc_process_var_ip6(data, value, endptr);
+	if (lc_pv_ret == 0) {
+		return(lc_pv_ret);
+	}
+
+	lc_pv_ret = lc_process_var_hostname6(data, value, endptr);
+	if (lc_pv_ret == 0) {
+		return(lc_pv_ret);
+	}
+	return(-1);
 }
 
 static int lc_process_var_longlong(long long *data, const char *value, const char **endptr) {

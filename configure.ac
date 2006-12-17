@@ -34,7 +34,8 @@ dnl DC_SYNC_SHLIBOBJS again.
 DC_GET_SHOBJFLAGS
 
 dnl This stuff has to come after the shobjtest to verify that it is correct
-AC_CHECK_HEADERS(ctype.h dirent.h pwd.h stdio.h stdlib.h string.h sys/stat.h sys/time.h sys/types.h time.h unistd.h)
+AC_CHECK_HEADERS(ctype.h dirent.h pwd.h stdio.h stdlib.h string.h sys/stat.h sys/time.h sys/types.h time.h unistd.h netdb.h netinet/in.h)
+
 AC_HEADER_TIME
 
 AC_REPLACE_FUNCS(strsep strtoll getuid)

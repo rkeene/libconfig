@@ -16648,7 +16648,9 @@ echo "${ECHO_T}$SHOBJLDFLAGS $SHOBJFLAGS" >&6
 
 
 
-for ac_header in ctype.h dirent.h pwd.h stdio.h stdlib.h string.h sys/stat.h sys/time.h sys/types.h time.h unistd.h
+
+
+for ac_header in ctype.h dirent.h pwd.h stdio.h stdlib.h string.h sys/stat.h sys/time.h sys/types.h time.h unistd.h netdb.h netinet/in.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
 if eval "test \"\${$as_ac_Header+set}\" = set"; then
@@ -16796,6 +16798,7 @@ _ACEOF
 fi
 
 done
+
 
 echo "$as_me:$LINENO: checking whether time.h and sys/time.h may both be included" >&5
 echo $ECHO_N "checking whether time.h and sys/time.h may both be included... $ECHO_C" >&6
