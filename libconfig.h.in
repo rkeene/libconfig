@@ -43,6 +43,10 @@ typedef enum {
         LC_VAR_IP,
         LC_VAR_IP4,
         LC_VAR_IP6,
+        LC_VAR_ADDR,
+        LC_VAR_ADDR4,
+        LC_VAR_ADDR6,
+        LC_VAR_HOSTNAME,
         LC_VAR_HOSTNAME4,
         LC_VAR_HOSTNAME6,
         LC_VAR_LIST = 0x80

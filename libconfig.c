@@ -60,11 +60,19 @@ static int lc_process_var_cidr(void *data, const char *value, const char **endpt
 	return(-1);
 }
 
-static int lc_process_var_hostname6(void *data, const char *value, const char **endptr) {
+static int lc_process_var_addr4(uint32_t *data, const char *value, const char **endptr) {
 	return(-1);
 }
 
-static int lc_process_var_hostname4(void *data, const char *value, const char **endptr) {
+static int lc_process_var_addr6(void *data, const char *value, const char **endptr) {
+	return(-1);
+}
+
+static int lc_process_var_hostname4(uint32_t *data, const char *value, const char **endptr) {
+	return(-1);
+}
+
+static int lc_process_var_hostname6(void *data, const char *value, const char **endptr) {
 	return(-1);
 }
 
@@ -72,13 +80,9 @@ static int lc_process_var_ip6(void *data, const char *value, const char **endptr
 	return(-1);
 }
 
-static int lc_process_var_ip4(void *data, const char *value, const char **endptr) {
-	uint32_t *dataval, retval = 0;
+static int lc_process_var_ip4(uint32_t *data, const char *value, const char **endptr) {
 	const char *dotptr = NULL;
-	int tmpval = -1;
-//	int dotcount
-
-	dataval = data;
+	int tmpval = -1, retval = 0;
 
 	dotptr = value;
 
@@ -101,71 +105,52 @@ static int lc_process_var_ip4(void *data, const char *value, const char **endptr
 		dotptr++;
 	}
 
-	*dataval = retval;
+	*data = retval;
 
 	*endptr = (char *) dotptr;
 
 	return(0);
 }
 
-static int lc_process_var_longlong(void *data, const char *value, const char **endptr) {
-	long long *dataval;
-
-	dataval = data;
-	*dataval = strtoll(value, (char **) endptr, 10);
+static int lc_process_var_longlong(long long *data, const char *value, const char **endptr) {
+	*data = strtoll(value, (char **) endptr, 10);
 
 	return(0);
 }
 
-static int lc_process_var_long(void *data, const char *value, const char **endptr) {
-	long *dataval;
-
-	dataval = data;
-	*dataval = strtoll(value, (char **) endptr, 10);
+static int lc_process_var_long(long *data, const char *value, const char **endptr) {
+	*data = strtoll(value, (char **) endptr, 10);
 
 	return(0);
 }
 
-static int lc_process_var_int(void *data, const char *value, const char **endptr) {
-	int *dataval;
-
-	dataval = data;
-	*dataval = strtoll(value, (char **) endptr, 10);
+static int lc_process_var_int(int *data, const char *value, const char **endptr) {
+	*data = strtoll(value, (char **) endptr, 10);
 
 	return(0);
 }
 
-static int lc_process_var_short(void *data, const char *value, const char **endptr) {
-	short *dataval;
-
-	dataval = data;
-	*dataval = strtoll(value, (char **) endptr, 10);
+static int lc_process_var_short(short *data, const char *value, const char **endptr) {
+	*data = strtoll(value, (char **) endptr, 10);
 
 	return(0);
 }
 
-static int lc_process_var_bool_byexistance(void *data, const char *value, const char **endptr) {
-	int *dataval;
-
-	dataval = data;
-
-	*dataval = 1;
+static int lc_process_var_bool_byexistance(int *data, const char *value, const char **endptr) {
+	*data = 1;
 
 	*endptr = NULL;
 
 	return(0);
 }
 
-static int lc_process_var_bool(void *data, const char *value, const char **endptr) {
+static int lc_process_var_bool(int *data, const char *value, const char **endptr) {
 	char *trueval[] = {"enable", "true", "yes", "on", "y", "1"};
 	char *falseval[] = {"disable", "false", "no", "off", "n", "0"};
 	size_t chkvallen, vallen;
-	int *dataval;
 	int i;
 
-	dataval = data;
-
-	*dataval = -1;
+	*data = -1;
 
 	vallen = strlen(value);
 
@@ -190,7 +175,7 @@ static int lc_process_var_bool(void *data, const char *value, const char **endpt
 		    value[chkvallen] == ' ') {
 			/* Declare a winner and set the next token. */
 			*endptr = value + chkvallen;
-			*dataval = 1;
+			*data = 1;
 			return(0);
 		}
 	}
@@ -216,7 +201,7 @@ static int lc_process_var_bool(void *data, const char *value, const char **endpt
 		    value[chkvallen] == ' ') {
 			/* Declare a winner and set the next token. */
 			*endptr = value + chkvallen;
-			*dataval = 0;
+			*data = 0;
 			return(0);
 		}
 	}
@@ -255,47 +240,32 @@ static unsigned long long lc_process_size(const char *value, const char **endptr
 	return(retval);
 }
 
-static int lc_process_var_sizelonglong(void *data, const char *value, const char **endptr) {
-	long long *dataval;
-
-	dataval = data;
-	*dataval = lc_process_size(value, endptr);
+static int lc_process_var_sizelonglong(long long *data, const char *value, const char **endptr) {
+	*data = lc_process_size(value, endptr);
 
 	return(0);
 }
 
-static int lc_process_var_sizelong(void *data, const char *value, const char **endptr) {
-	long *dataval;
-
-	dataval = data;
-	*dataval = lc_process_size(value, endptr);
+static int lc_process_var_sizelong(long *data, const char *value, const char **endptr) {
+	*data = lc_process_size(value, endptr);
 
 	return(0);
 }
 
-static int lc_process_var_sizeint(void *data, const char *value, const char **endptr) {
-	int *dataval;
-
-	dataval = data;
-	*dataval = lc_process_size(value, endptr);
+static int lc_process_var_sizeint(int *data, const char *value, const char **endptr) {
+	*data = lc_process_size(value, endptr);
 
 	return(0);
 }
 
-static int lc_process_var_sizeshort(void *data, const char *value, const char **endptr) {
-	short *dataval;
-
-	dataval = data;
-	*dataval = lc_process_size(value, endptr);
+static int lc_process_var_sizeshort(short *data, const char *value, const char **endptr) {
+	*data = lc_process_size(value, endptr);
 
 	return(0);
 }
 
-static int lc_process_var_sizesizet(void *data, const char *value, const char **endptr) {
-	size_t *dataval;
-
-	dataval = data;
-	*dataval = lc_process_size(value, endptr);
+static int lc_process_var_sizesizet(size_t *data, const char *value, const char **endptr) {
+	*data = lc_process_size(value, endptr);
 
 	return(0);
 }
@@ -354,6 +324,12 @@ int lc_handle_type(lc_var_type_t type, const char *value, void *data) {
 		case LC_VAR_IP6:
 			return(lc_process_var_ip6(data, value, &next));
 			break;
+		case LC_VAR_ADDR:
+		case LC_VAR_ADDR4:
+			return(lc_process_var_addr4(data, value, &next));
+		case LC_VAR_ADDR6:
+			return(lc_process_var_addr6(data, value, &next));
+		case LC_VAR_HOSTNAME:
 		case LC_VAR_HOSTNAME4:
 			return(lc_process_var_hostname4(data, value, &next));
 			break;
