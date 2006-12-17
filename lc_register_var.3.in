@@ -83,10 +83,13 @@ LC_VAR_CIDR
 This type of variable accepts a CIDR format netmask and IP.  This is not yet implemented. (XXX)
 .TP
 LC_VAR_IP
-This type of variable accepts an IP address in decimal-dot format.  The value is stored in a uint32_t.
+This type of variable accepts an IP address in decimal-dot format.  The value is stored in a uint32_t in network byte order.
+.TP
+LC_VAR_HOSTNAME
+This type of variable accepts an address in hostname format.  The value is stored in a uint32_t in network byte order.
 .TP
 LC_VAR_ADDR
-This type of variable accepts an address in either host or decimal-dot format.  The value is stored in a uint32_t.  This is not yet implemented. (XXX)
+This type of variable accepts an address in either hostname or decimal-dot format.  The value is stored in a uint32_t in network byte order.
 
 .SH "RETURN VALUE"
 On success 0 is returned, otherwise -1 is returned.

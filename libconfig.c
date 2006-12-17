@@ -76,9 +76,11 @@ static int lc_process_var_hostname4(uint32_t *data, const char *value, const cha
 		return(-1);
 	}
 
-	memcpy(data, ghbn_ret->h_addr_list[0], sizeof(*data));
+	if (ghbn_ret->h_addr_list[0] == 0) {
+		return(-1);
+	}
 
-	*data = ntohl(*data);
+	memcpy(data, ghbn_ret->h_addr_list[0], sizeof(*data));
 
 	return(0);
 }
@@ -107,14 +109,13 @@ static int lc_process_var_ip4(uint32_t *data, const char *value, const char **en
 					break;
 				}
 
-				ipval <<= 8;
-				ipval |= curr_ipval;
-				curr_ipval = 0;
-
 				/* For lists */
 				if (*valptr == ',') {
 					break;
 				}
+
+				ipval |= curr_ipval << ((dotcount - 1) * 8);
+				curr_ipval = 0;
 
 				continue;
 			} else {
@@ -127,10 +128,12 @@ static int lc_process_var_ip4(uint32_t *data, const char *value, const char **en
 		curr_ipval += *valptr - '0';
 	}
 
-	if (retval == 0) {
-		ipval <<= 8;
-		ipval |= curr_ipval;
+	if (curr_ipval > 255) {
+		retval = -1;
+	}
 
+	if (retval == 0) {
+		ipval |= curr_ipval << 24;
 		*data = ipval;
 	}
 
