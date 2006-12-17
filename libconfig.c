@@ -300,14 +300,14 @@ static int lc_process_var_sizesizet(void *data, const char *value, const char **
 	return(0);
 }
 
-
-static int lc_handle_type(lc_var_type_t type, const char *value, void *data) {
+int lc_handle_type(lc_var_type_t type, const char *value, void *data) {
 	const char *next;
 	int is_list;
 
 	is_list = type & LC_VAR_LIST;
 
 	if (is_list == LC_VAR_LIST) {
+		/* XXX */
 	}
 
 	switch (type) {
@@ -377,7 +377,8 @@ static int lc_handle_type(lc_var_type_t type, const char *value, void *data) {
 		case LC_VAR_SECTIONSTART:
 		case LC_VAR_SECTIONEND:
 			return(0);
-			break;
+		case LC_VAR_LIST:
+			return(0);
 	}
 
 	return(-1);
@@ -401,6 +402,9 @@ static int lc_handle(struct lc_varhandler_st *handler, const char *var, const ch
 	switch (handler->mode) {
 		case LC_MODE_CALLBACK:
 			if (handler->callback != NULL) {
+				lc_errno = LC_ERR_NONE;
+				lc_err_usererrmsg = NULL;
+
 				retval = handler->callback(localvar, var, varargs, value, flags, handler->extra);
 				if (retval < 0) {
 					lc_errno = LC_ERR_CALLBACK;

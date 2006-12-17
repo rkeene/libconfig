@@ -6,10 +6,6 @@ extern "C" {
 
 __BLANK_LINE__
 
-!define LC_VAR_LIST 0x80
-
-__BLANK_LINE__
-
 typedef enum {
         LC_CONF_SECTION,
         LC_CONF_APACHE,
@@ -49,6 +45,7 @@ typedef enum {
         LC_VAR_IP6,
         LC_VAR_HOSTNAME4,
         LC_VAR_HOSTNAME6,
+        LC_VAR_LIST = 0x80
 } lc_var_type_t;
 
 __BLANK_LINE__
@@ -83,6 +80,7 @@ lc_err_t lc_geterrno(void);
 void lc_seterrstr(const char *usererrstr);
 char *lc_geterrstr(void);
 int lc_process_file(const char *appname, const char *pathname, lc_conf_type_t type);
+int lc_handle_type(lc_var_type_t type, const char *value, void *data);
 void lc_cleanup(void);
 
 __BLANK_LINE__

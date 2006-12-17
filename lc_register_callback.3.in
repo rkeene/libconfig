@@ -173,11 +173,6 @@ int callback_ifmodule(const char *shortvar, const char *var,
 		return(LC_CBRET_OKAY);
 	}
 
-	if (flags != LC_FLAGS_SECTIONSTART) {
-		lc_seterrstr("IfModule can only be used as a \\
-		              section.");
-		return(LC_CBRET_ERROR);
-	}
 	if (arguments == NULL) {
 		lc_seterrstr("You must specify an argument to \\
 		              IfModule.");
@@ -194,9 +189,9 @@ int callback_ifmodule(const char *shortvar, const char *var,
 }
 
 int main(int argc, char **argv) {
-	int lc_rc_ret = 0, lc_p_ret;
+	int lc_rc_ret, lc_p_ret;
 
-	lc_rc_ret = lc_register_callback("*.IfModule", 0, LC_VAR_NONE,
+	lc_rc_ret = lc_register_callback("*.IfModule", 0, LC_VAR_SECTION,
 	                                 callback_ifmodule, NULL);
 
 	if (lc_rc_ret != 0) {
