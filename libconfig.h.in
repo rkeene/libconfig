@@ -49,6 +49,8 @@ typedef enum {
         LC_VAR_HOSTNAME,
         LC_VAR_HOSTNAME4,
         LC_VAR_HOSTNAME6,
+        LC_VAR_DOUBLE,
+        LC_VAR_FLOAT,
         LC_VAR_LIST = 0x80
 } lc_var_type_t;
 

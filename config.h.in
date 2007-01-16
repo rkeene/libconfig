@@ -54,6 +54,9 @@
 /* Define to 1 if you have the `strsep' function. */
 #undef HAVE_STRSEP
 
+/* Define to 1 if you have the `strtof' function. */
+#undef HAVE_STRTOF
+
 /* Define to 1 if you have the `strtoll' function. */
 #undef HAVE_STRTOLL
 

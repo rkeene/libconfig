@@ -333,6 +333,23 @@ static int lc_process_var_sizesizet(size_t *data, const char *value, const char 
 	return(0);
 }
 
+static int lc_process_var_float(float *data, const char *value, const char **endptr) {
+#ifdef HAVE_STRTOF
+	*data = strtof(value, endptr);
+#else
+	*data = strtod(value, endptr);
+#endif
+
+	return(0);
+}
+
+static int lc_process_var_double(float *data, const char *value, const char **endptr) {
+	*data = strtod(value, endptr);
+
+	return(0);
+}
+
+
 int lc_handle_type(lc_var_type_t type, const char *value, void *data) {
 	const char *next;
 	int is_list;
@@ -401,6 +418,12 @@ int lc_handle_type(lc_var_type_t type, const char *value, void *data) {
 			break;
 		case LC_VAR_CIDR:
 			return(lc_process_var_cidr(data, value, &next));
+			break;
+		case LC_VAR_DOUBLE:
+			return(lc_process_var_double(data, value, &next));
+			break;
+		case LC_VAR_FLOAT:
+			return(lc_process_var_float(data, value, &next));
 			break;
 		case LC_VAR_TIME:
 		case LC_VAR_DATE:

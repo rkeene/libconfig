@@ -1,5 +1,5 @@
 AC_REVISION($Revision $)
-AC_INIT(libconfig, 0.2.3)
+AC_INIT(libconfig, 0.2.4)
 AC_CONFIG_HEADER(config.h)
 
 dnl Find out about the host OS
@@ -39,7 +39,7 @@ AC_CHECK_HEADERS(ctype.h dirent.h pwd.h stdio.h stdlib.h string.h sys/stat.h sys
 AC_HEADER_TIME
 
 AC_REPLACE_FUNCS(strsep strtoll getuid)
-AC_CHECK_FUNCS(getpwuid)
+AC_CHECK_FUNCS(getpwuid strtof)
 
 dnl This MUST be last.
 DC_SYNC_SHLIBOBJS

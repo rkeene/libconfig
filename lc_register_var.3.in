@@ -46,6 +46,12 @@ For a "int" integer type variable.  The data passed should be of type "int *".
 LC_VAR_SHORT
 For a "short" integer type variable.  The data passed should be of type "short *".
 .TP
+LC_VAR_FLOAT
+For a "float" floating point type variable.  The data passed should be of type "float *".
+.TP
+LC_VAR_DOUBLE
+For a "double" floating point type variable.  The data passed should be of type "double *".
+.TP
 LC_VAR_BOOL
 For a boolean type variable.  The data passed should be of type "int *".  When a true value is specified the variable is set to 1.  When a false value is specified the variable is set to 0.  Any other value sets the variable to -1.  Valid true values are: enable, true, yes, on, y, and 1.  Valid false values are: disable, false, off, no, n, and 0.
 .TP
