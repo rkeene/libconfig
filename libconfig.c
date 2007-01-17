@@ -343,7 +343,7 @@ static int lc_process_var_float(float *data, const char *value, const char **end
 	return(0);
 }
 
-static int lc_process_var_double(float *data, const char *value, const char **endptr) {
+static int lc_process_var_double(double *data, const char *value, const char **endptr) {
 	*data = strtod(value, endptr);
 
 	return(0);
