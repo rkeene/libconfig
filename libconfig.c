@@ -335,16 +335,16 @@ static int lc_process_var_sizesizet(size_t *data, const char *value, const char 
 
 static int lc_process_var_float(float *data, const char *value, const char **endptr) {
 #ifdef HAVE_STRTOF
-	*data = strtof(value, endptr);
+	*data = strtof(value, (char **) endptr);
 #else
-	*data = strtod(value, endptr);
+	*data = strtod(value, (char **) endptr);
 #endif
 
 	return(0);
 }
 
 static int lc_process_var_double(double *data, const char *value, const char **endptr) {
-	*data = strtod(value, endptr);
+	*data = strtod(value, (char **) endptr);
 
 	return(0);
 }
