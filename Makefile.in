@@ -3,9 +3,9 @@ LN_S = @LN_S@
 AR = @AR@
 RANLIB = @RANLIB@
 CPP = @CPP@
-CFLAGS = -Wall @CFLAGS@ @DEFS@
+CFLAGS = @CFLAGS@ @DEFS@
 CPPFLAGS = @CPPFLAGS@ @DEFS@
-LDFLAGS = @LDFLAGS@ @LIBS@
+LDFLAGS = @LDFLAGS@
 INSTALL = @INSTALL@
 EXEEXT = @EXEEXT@
 OBJEXT = @OBJEXT@
@@ -27,6 +27,7 @@ exec_prefix = @exec_prefix@
 bindir = @bindir@
 libdir = @libdir@
 includedir = @includedir@
+srcdir = @srcdir@
 
 LIBS = libconfig.$(AREXT) libconfig.$(SHOBJEXT)
 BINS =
@@ -42,25 +43,27 @@ libconfig.$(AREXT): $(OBJS)
 	$(AR) rcu $@ $^
 	-$(RANLIB) $@
 
-libconfig.o: libconfig.c compat.h win32.h config.h libconfig.h
-libconfig_shr.o: libconfig.c compat.h win32.h config.h libconfig.h
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) -c -o $@ libconfig.c
+libconfig.o: $(srcdir)/libconfig.c $(srcdir)/compat.h $(srcdir)/win32.h $(srcdir)/config.h libconfig.h
+libconfig_shr.o: $(srcdir)/libconfig.c $(srcdir)/compat.h $(srcdir)/win32.h $(srcdir)/config.h libconfig.h
 
-%_shr.o: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) -c -o $@ $?
+%_shr.o: $(srcdir)/%.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) -c -o $@ "$(filter %.c, $^)"
 
-libconfig.h: libconfig.h.in
-	cat $? | $(CPP) $(CPPFLAGS) - | grep -v '^#' | grep -v '^ *$$' | sed 's/^!/#  /g;s/__BLANK_LINE__//' > $@
+%.o: $(srcdir)/%.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ "$(filter %.c, $^)"
 
-test-lc$(EXEEXT): $(LIBS) test-lc.c
+libconfig.h: $(srcdir)/libconfig.h.in
+	cat "$^" | $(CPP) $(CPPFLAGS) - | grep -v '^#' | grep -v '^ *$$' | sed 's/^!/#  /g;s/__BLANK_LINE__//' > $@
+
+test-lc$(EXEEXT): $(LIBS) $(srcdir)/test-lc.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c, $^) $(LDFLAGS) -Wl,-R -Wl,. -L. -lconfig
 
 .PHONY: clean distclean install
 clean:
 	rm -f *.o $(BINS) $(LIBS) libconfig.h *~ test-lc$(EXEEXT) *.dll.a *.dll.def *.dll
+
 distclean: clean
 	rm -f Makefile config.h config.status config.log lc_geterrno.3 lc_process.3 lc_cleanup.3 lc_process_file.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 libconfig.3
-
 
 install: all libconfig.h
 	-$(INSTALL) -d "$(mandir)"
