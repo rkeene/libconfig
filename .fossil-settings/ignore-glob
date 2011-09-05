@@ -3,11 +3,15 @@
 Makefile
 Makefile/*
 config.h
+config.h.in
+config.h.in/*
 config.h/*
 config.log
 config.log/*
 config.status
 config.status/*
+configure
+configure/*
 lc_cleanup.3
 lc_cleanup.3/*
 lc_geterrno.3
