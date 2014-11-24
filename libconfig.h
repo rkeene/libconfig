@@ -1,10 +1,8 @@
-!ifndef _RSK_LIBCONFIG_H
-!define _RSK_LIBCONFIG_H
-!ifdef __cplusplus
+#ifndef _RSK_LIBCONFIG_H
+#  define _RSK_LIBCONFIG_H
+#  ifdef __cplusplus
 extern "C" {
-!endif
-
-__BLANK_LINE__
+#  endif
 
 typedef enum {
         LC_CONF_SECTION,
@@ -14,8 +12,6 @@ typedef enum {
         LC_CONF_SPACE,
         LC_CONF_XML
 } lc_conf_type_t;
-
-__BLANK_LINE__
 
 typedef enum {
         LC_VAR_UNKNOWN,
@@ -54,8 +50,6 @@ typedef enum {
         LC_VAR_LIST = 0x80
 } lc_var_type_t;
 
-__BLANK_LINE__
-
 typedef enum {
         LC_FLAGS_VAR,
         LC_FLAGS_CMDLINE,
@@ -63,8 +57,6 @@ typedef enum {
         LC_FLAGS_SECTIONSTART,
         LC_FLAGS_SECTIONEND
 } lc_flags_t;
-
-__BLANK_LINE__
 
 typedef enum {
         LC_ERR_NONE,
@@ -77,8 +69,6 @@ typedef enum {
         LC_ERR_ENOMEM
 } lc_err_t;
 
-__BLANK_LINE__
-
 int lc_process(int argc, char **argv, const char *appname, lc_conf_type_t type, const char *extra);
 int lc_register_callback(const char *var, char opt, lc_var_type_t type, int (*callback)(const char *, const char *, const char *, const char *, lc_flags_t, void *), void *extra);
 int lc_register_var(const char *var, lc_var_type_t type, void *data, char opt);
@@ -89,19 +79,13 @@ int lc_process_file(const char *appname, const char *pathname, lc_conf_type_t ty
 int lc_handle_type(lc_var_type_t type, const char *value, void *data);
 void lc_cleanup(void);
 
-__BLANK_LINE__
-
-!define LC_CBRET_IGNORESECTION (255)
-!define LC_CBRET_OKAY (0)
-!define LC_CBRET_ERROR (-1)
-
-__BLANK_LINE__
+#  define LC_CBRET_IGNORESECTION (255)
+#  define LC_CBRET_OKAY (0)
+#  define LC_CBRET_ERROR (-1)
 
 extern int lc_optind;
 
-__BLANK_LINE__
-
-!ifdef __cplusplus
+#  ifdef __cplusplus
 }
-!endif
-!endif
+#  endif
+#endif

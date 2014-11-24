@@ -52,15 +52,11 @@ libconfig_shr.o: $(srcdir)/libconfig.c $(srcdir)/compat.h $(srcdir)/win32.h $(sr
 %.o: $(srcdir)/%.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ "$(filter %.c, $^)"
 
-libconfig.h: $(srcdir)/libconfig.h.in
-	cat "$^" | $(CPP) $(CPPFLAGS) - | grep -v '^#' | grep -v '^ *$$' | sed 's/^!/#  /g;s/__BLANK_LINE__//' > $@
-
 test-lc$(EXEEXT): $(LIBS) $(srcdir)/test-lc.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c, $^) $(LDFLAGS) -Wl,-R -Wl,. -L. -lconfig
 
-.PHONY: clean distclean install
 clean:
-	rm -f *.o $(BINS) $(LIBS) libconfig.h *~ test-lc$(EXEEXT) *.dll.a *.dll.def *.dll
+	rm -f *.o $(BINS) $(LIBS) *~ test-lc$(EXEEXT) *.dll.a *.dll.def *.dll
 
 distclean: clean
 	rm -f Makefile config.h config.status config.log lc_geterrno.3 lc_process.3 lc_cleanup.3 lc_process_file.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 libconfig.3
@@ -87,3 +83,5 @@ install: all libconfig.h
 	$(INSTALL) -m 644 libconfig.h "$(includedir)/libconfig.h"
 	-( cd "$(libdir)" && rm -f libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) )
 	-( cd "$(libdir)" && rm -f libconfig.$(SHOBJEXT) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT) )
+
+.PHONY: all clean distclean install

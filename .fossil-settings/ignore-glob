@@ -40,8 +40,6 @@ libconfig.dll.a/*
 libconfig.dll.def
 libconfig.dll.def/*
 libconfig.dll/*
-libconfig.h
-libconfig.h/*
 libconfig.so
 libconfig.so/*
 test-lc
