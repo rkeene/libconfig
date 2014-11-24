@@ -29,3 +29,17 @@ test-lc.exe
 test.cfg
 libconfig.vers
 libconfig.syms
+conf_apache.o
+conf_apache_shr.o
+conf_colon.o
+conf_colon_shr.o
+conf_equal.o
+conf_equal_shr.o
+conf_section.o
+conf_section_shr.o
+conf_space.o
+conf_space_shr.o
+conf_xml.o
+conf_xml_shr.o
+libconfig.o
+libconfig_shr.o
