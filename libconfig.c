@@ -46,6 +46,7 @@ const char *lc_err_usererrmsg = NULL;
 const char *lc_errfile = NULL;
 int lc_optind = 0;
 int lc_errline = 0;
+char *lc_erroptname =  NULL;
 
 extern char **environ;
 
@@ -86,6 +87,8 @@ static int lc_process_var_hostname4(uint32_t *data, const char *value, const cha
 }
 
 static int lc_process_var_hostname6(void *data, const char *value, const char **endptr) {
+	lc_errno = LC_ERR_BADFORMAT;
+
 	return(-1);
 }
 
@@ -137,10 +140,16 @@ static int lc_process_var_ip4(uint32_t *data, const char *value, const char **en
 		*data = ipval;
 	}
 
+	if (retval < 0) {
+		lc_errno = LC_ERR_BADFORMAT;
+	}
+
 	return(retval);
 }
 
 static int lc_process_var_ip6(void *data, const char *value, const char **endptr) {
+	lc_errno = LC_ERR_BADFORMAT;
+
 	return(-1);
 }
 
@@ -156,6 +165,8 @@ static int lc_process_var_addr4(uint32_t *data, const char *value, const char **
 	if (lc_pv_ret == 0) {
 		return(lc_pv_ret);
 	}
+
+	lc_errno = LC_ERR_BADFORMAT;
 
 	return(-1);
 }
@@ -725,6 +736,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 						lc_errfile = local_lc_errfile;
 						lc_errline = local_lc_errline;
 						lc_errno = LC_ERR_BADFORMAT;
+						lc_erroptname = strdup(cmdarg);
 						free(usedargv);
 						free(newargv);
 						return(-1);
@@ -736,6 +748,9 @@ static int lc_process_cmdline(int argc, char **argv) {
 
 				chkretval = lc_handle(handler, handler->var, NULL, cmdoptarg, LC_FLAGS_CMDLINE);
 				if (chkretval < 0) {
+					lc_errfile = local_lc_errfile;
+					lc_errline = local_lc_errline;
+					lc_erroptname = strdup(cmdarg);
 					retval = -1;
 				}
 
@@ -1098,6 +1113,7 @@ void lc_seterrstr(const char *usererrmsg) {
 char *lc_geterrstr(void) {
 	static char retval[512];
 	const char *errmsg = NULL;
+	const char *local_lc_errfile;
 
 	switch (lc_errno) {
 		case LC_ERR_NONE:
@@ -1139,9 +1155,15 @@ char *lc_geterrstr(void) {
 	}
 
 	if (lc_errfile == NULL) {
-		snprintf(retval, sizeof(retval), "%s:%i: %s", "<no file>", lc_errline, errmsg);
+		local_lc_errfile = "<no file>";
 	} else {
-		snprintf(retval, sizeof(retval), "%s:%i: %s", lc_errfile, lc_errline, errmsg);
+		local_lc_errfile = lc_errfile;
+	}
+
+	if (lc_erroptname != NULL) {
+		snprintf(retval, sizeof(retval), "%s:%i: \"%s\": %s", local_lc_errfile, lc_errline, lc_erroptname, errmsg);
+	} else {
+		snprintf(retval, sizeof(retval), "%s:%i: %s", local_lc_errfile, lc_errline, errmsg);
 	}
 
 	retval[sizeof(retval) - 1] = '\0';
