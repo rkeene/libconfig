@@ -33,6 +33,9 @@ DC_GET_SHOBJFLAGS
 
 dnl This stuff has to come after the shobjtest to verify that it is correct
 AC_CHECK_HEADERS(ctype.h dirent.h pwd.h stdio.h stdlib.h string.h sys/stat.h sys/time.h sys/types.h time.h unistd.h netdb.h netinet/in.h)
+AC_SEARCH_LIBS(gethostbyname, [nsl socket ws2_32], [], [
+	AC_MSG_ERROR([Unable to find a library supplying gethostbyname.])
+])
 
 AC_HEADER_TIME
 
