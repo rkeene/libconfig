@@ -3,6 +3,8 @@ Primary Authors:
     Primary maintainer.
 
 People who have submitted patches:
+  * Jay Freeman
+    strsep() implementation
   * Mirko Buffoni <mirko.buffoni @AT@ synthesys.it>
     Fixed installation issues and corrected mistakes in RPM spec file.
   * T. Hayfield
