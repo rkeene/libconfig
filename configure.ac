@@ -1,4 +1,4 @@
-AC_INIT(libconfig, 0.3.0)
+AC_INIT(libconfig, 0.3.1)
 AC_CONFIG_HEADER(config.h)
 
 dnl Find out about the host OS
