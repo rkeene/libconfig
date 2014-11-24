@@ -37,7 +37,7 @@ SHOBJS = libconfig_shr.o conf_space_shr.o conf_section_shr.o conf_apache_shr.o c
 
 all: $(LIBS) $(BINS)
 
-libconfig.$(SHOBJEXT): $(SHOBJS) libconfig.vers libconfig.syms
+libconfig.$(SHOBJEXT): $(SHOBJS) $(srcdir)/libconfig.vers libconfig.syms
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $(SHOBJS) $(LDFLAGS)
 	-@WEAKENSYMS@ libconfig.$(SHOBJEXT)
 	-@REMOVESYMS@ libconfig.$(SHOBJEXT)
@@ -46,8 +46,8 @@ libconfig.$(AREXT): $(OBJS)
 	$(AR) rcu $@ $(OBJS)
 	-$(RANLIB) $@
 
-libconfig.o: $(srcdir)/libconfig.c $(srcdir)/compat.h $(srcdir)/win32.h $(srcdir)/config.h libconfig.h
-libconfig_shr.o: $(srcdir)/libconfig.c $(srcdir)/compat.h $(srcdir)/win32.h $(srcdir)/config.h libconfig.h
+libconfig.o: $(srcdir)/libconfig.c $(srcdir)/compat.h $(srcdir)/win32.h $(srcdir)/config.h $(srcdir)/libconfig.h
+libconfig_shr.o: $(srcdir)/libconfig.c $(srcdir)/compat.h $(srcdir)/win32.h $(srcdir)/config.h $(srcdir)/libconfig.h
 
 %_shr.o: $(srcdir)/%.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) -c -o $@ "$(filter %.c, $^)"
@@ -55,19 +55,19 @@ libconfig_shr.o: $(srcdir)/libconfig.c $(srcdir)/compat.h $(srcdir)/win32.h $(sr
 %.o: $(srcdir)/%.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ "$(filter %.c, $^)"
 
-libconfig.vers: libconfig.syms.in
-	rm -f libconfig.vers
+$(srcdir)/libconfig.vers: $(srcdir)/libconfig.syms.in
+	rm -f $(srcdir)/libconfig.vers
 	echo 'LIBCONFIG_0.3.0 {' > '$@'
 	echo '	global:' >> '$@'
-	cat libconfig.syms.in | sed 's/^@SYMPREFIX@//;s/^/		/;s/$$/;/' >> '$@'
+	cat '$(srcdir)/libconfig.syms.in' | sed 's/^@''SYMPREFIX@//;s/^/		/;s/$$/;/' >> '$@'
 	echo '	local:' >> '$@'
 	echo '		*;' >> '$@'
 	echo '};' >> '$@'
 
 test-lc$(EXEEXT): $(LIBS) $(srcdir)/test-lc.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c, $^) $(LDFLAGS) -Wl,-R -Wl,. -L. -lconfig
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c, $^) $(LDFLAGS) -Wl,-R -Wl,$(srcdir) -L$(srcdir) -lconfig
 
-install: all libconfig.h
+install: all $(srcdir)/libconfig.h
 	-$(INSTALL) -d "$(DESTDIR)$(mandir)"
 	-$(INSTALL) -d "$(DESTDIR)$(mandir)/man3"
 	-$(INSTALL) -d "$(DESTDIR)$(libdir)"
@@ -86,7 +86,7 @@ install: all libconfig.h
 	$(INSTALL) -m 644 lc_process.3 "$(DESTDIR)$(mandir)/man3/lc_process.3"
 	$(INSTALL) -m 644 lc_cleanup.3 "$(DESTDIR)$(mandir)/man3/lc_cleanup.3"
 	$(INSTALL) -m 644 libconfig.3 "$(DESTDIR)$(mandir)/man3/libconfig.3"
-	$(INSTALL) -m 644 libconfig.h "$(DESTDIR)$(includedir)/libconfig.h"
+	$(INSTALL) -m 644 $(srcdir)/libconfig.h "$(DESTDIR)$(includedir)/libconfig.h"
 	-( cd "$(DESTDIR)$(libdir)" && rm -f libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) )
 	-( cd "$(DESTDIR)$(libdir)" && rm -f libconfig.$(SHOBJEXT) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT) )
 

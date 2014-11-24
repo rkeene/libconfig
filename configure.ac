@@ -40,7 +40,7 @@ AC_REPLACE_FUNCS(strsep strtoll getuid)
 AC_CHECK_FUNCS(getpwuid strtof)
 
 dnl Setup stable API
-DC_SETUP_STABLE_API(libconfig.vers, libconfig.syms)
+DC_SETUP_STABLE_API([${srcdir}/libconfig.vers], libconfig.syms)
 
 dnl Set a soname
 SHOBJ_SET_SONAME([libconfig.$SHOBJEXT.$PACKAGE_VERSION])
