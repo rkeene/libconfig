@@ -19,6 +19,7 @@ for file in config.guess config.sub install-sh; do
 done
 
 aclocal -I aclocal
+autoheader
 autoconf
 automake -fca
 
