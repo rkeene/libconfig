@@ -68,27 +68,27 @@ test-lc$(EXEEXT): $(LIBS) $(srcdir)/test-lc.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c, $^) $(LDFLAGS) -Wl,-R -Wl,. -L. -lconfig
 
 install: all libconfig.h
-	-$(INSTALL) -d "$(mandir)"
-	-$(INSTALL) -d "$(mandir)/man3"
-	-$(INSTALL) -d "$(libdir)"
-	-$(INSTALL) -d "$(includedir)"
-	-$(INSTALL) -m 644 libconfig.$(SHOBJEXT).def "$(libdir)/libconfig.$(SHOBJEXT).def"
-	-$(INSTALL) -m 644 libconfig.$(SHOBJEXT).a "$(libdir)/libconfig.$(SHOBJEXT).a"
-	$(INSTALL) -m 755 libconfig.$(SHOBJEXT) "$(libdir)/libconfig.$(SHOBJEXT).$(PKGVERS)"
-	$(INSTALL) -m 644 libconfig.$(AREXT) "$(libdir)/libconfig.$(AREXT)"
-	$(INSTALL) -m 644 lc_register_callback.3 "$(mandir)/man3/lc_register_callback.3"
-	$(INSTALL) -m 644 lc_register_var.3 "$(mandir)/man3/lc_register_var.3"
-	$(INSTALL) -m 644 lc_process_file.3 "$(mandir)/man3/lc_process_file.3"
-	$(INSTALL) -m 644 lc_handle_type.3 "$(mandir)/man3/lc_handle_type.3"
-	$(INSTALL) -m 644 lc_geterrstr.3 "$(mandir)/man3/lc_geterrstr.3"
-	$(INSTALL) -m 644 lc_seterrstr.3 "$(mandir)/man3/lc_seterrstr.3"
-	$(INSTALL) -m 644 lc_geterrno.3 "$(mandir)/man3/lc_geterrno.3"
-	$(INSTALL) -m 644 lc_process.3 "$(mandir)/man3/lc_process.3"
-	$(INSTALL) -m 644 lc_cleanup.3 "$(mandir)/man3/lc_cleanup.3"
-	$(INSTALL) -m 644 libconfig.3 "$(mandir)/man3/libconfig.3"
-	$(INSTALL) -m 644 libconfig.h "$(includedir)/libconfig.h"
-	-( cd "$(libdir)" && rm -f libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) )
-	-( cd "$(libdir)" && rm -f libconfig.$(SHOBJEXT) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT) )
+	-$(INSTALL) -d "$(DESTDIR)$(mandir)"
+	-$(INSTALL) -d "$(DESTDIR)$(mandir)/man3"
+	-$(INSTALL) -d "$(DESTDIR)$(libdir)"
+	-$(INSTALL) -d "$(DESTDIR)$(includedir)"
+	-$(INSTALL) -m 644 libconfig.$(SHOBJEXT).def "$(DESTDIR)$(libdir)/libconfig.def"
+	-$(INSTALL) -m 644 libconfig.$(SHOBJEXT).a "$(DESTDIR)$(libdir)/libconfig.lib"
+	$(INSTALL) -m 755 libconfig.$(SHOBJEXT) "$(DESTDIR)$(libdir)/libconfig.$(SHOBJEXT).$(PKGVERS)"
+	$(INSTALL) -m 644 libconfig.$(AREXT) "$(DESTDIR)$(libdir)/libconfig.$(AREXT)"
+	$(INSTALL) -m 644 lc_register_callback.3 "$(DESTDIR)$(mandir)/man3/lc_register_callback.3"
+	$(INSTALL) -m 644 lc_register_var.3 "$(DESTDIR)$(mandir)/man3/lc_register_var.3"
+	$(INSTALL) -m 644 lc_process_file.3 "$(DESTDIR)$(mandir)/man3/lc_process_file.3"
+	$(INSTALL) -m 644 lc_handle_type.3 "$(DESTDIR)$(mandir)/man3/lc_handle_type.3"
+	$(INSTALL) -m 644 lc_geterrstr.3 "$(DESTDIR)$(mandir)/man3/lc_geterrstr.3"
+	$(INSTALL) -m 644 lc_seterrstr.3 "$(DESTDIR)$(mandir)/man3/lc_seterrstr.3"
+	$(INSTALL) -m 644 lc_geterrno.3 "$(DESTDIR)$(mandir)/man3/lc_geterrno.3"
+	$(INSTALL) -m 644 lc_process.3 "$(DESTDIR)$(mandir)/man3/lc_process.3"
+	$(INSTALL) -m 644 lc_cleanup.3 "$(DESTDIR)$(mandir)/man3/lc_cleanup.3"
+	$(INSTALL) -m 644 libconfig.3 "$(DESTDIR)$(mandir)/man3/libconfig.3"
+	$(INSTALL) -m 644 libconfig.h "$(DESTDIR)$(includedir)/libconfig.h"
+	-( cd "$(DESTDIR)$(libdir)" && rm -f libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) )
+	-( cd "$(DESTDIR)$(libdir)" && rm -f libconfig.$(SHOBJEXT) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT) )
 
 clean:
 	rm -f *.o $(BINS) $(LIBS) *~ test-lc$(EXEEXT) *.dll.a *.dll.def *.dll
