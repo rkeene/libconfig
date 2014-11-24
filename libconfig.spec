@@ -7,7 +7,7 @@ Copyright: MIT
 Group: System Environment/Libraries
 Source: http://www.rkeene.org/files/oss/libconfig/devel/libconfig-@@VERS@@.tar.gz
 URL: http://www.rkeene.org/oss/libconfig/
-Vendor: Keene Enterprises
+Vendor: Core Adaptive LLC
 Packager: Roy Keene <libconfig@rkeene.org>
 
 %description
