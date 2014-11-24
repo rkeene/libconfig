@@ -18,6 +18,7 @@ AREXT = @AREXT@
 PKGVERS = @PACKAGE_VERSION@
 PKGVERSMAJOR = `echo $(PKGVERS) | cut -f 1 -d .`
 EXEEXT = @EXEEXT@
+LIBS = @LIBS@
 
 prefix = @prefix@
 mandir = @mandir@
@@ -29,16 +30,15 @@ libdir = @libdir@
 includedir = @includedir@
 srcdir = @srcdir@
 
-LIBS = libconfig.$(AREXT) libconfig.$(SHOBJEXT)
-BINS =
+BINS = libconfig.$(AREXT) libconfig.$(SHOBJEXT)
 # The following two lines need to be kept syncronised.
 OBJS = libconfig.o conf_space.o conf_section.o conf_apache.o conf_colon.o conf_equal.o conf_xml.o @LIBOBJS@
 SHOBJS = libconfig_shr.o conf_space_shr.o conf_section_shr.o conf_apache_shr.o conf_colon_shr.o conf_equal_shr.o conf_xml_shr.o @SHLIBOBJS@
 
-all: $(LIBS) $(BINS)
+all: $(BINS)
 
 libconfig.$(SHOBJEXT): $(SHOBJS) $(srcdir)/libconfig.vers libconfig.syms
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $(SHOBJS) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $(SHOBJS) $(LIBS)
 	-@WEAKENSYMS@ libconfig.$(SHOBJEXT)
 	-@REMOVESYMS@ libconfig.$(SHOBJEXT)
 
@@ -64,7 +64,7 @@ $(srcdir)/libconfig.vers: $(srcdir)/libconfig.syms.in
 	echo '		*;' >> '$@'
 	echo '};' >> '$@'
 
-test-lc$(EXEEXT): $(LIBS) $(srcdir)/test-lc.c
+test-lc$(EXEEXT): $(BINS) $(srcdir)/test-lc.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c, $^) $(LDFLAGS) -Wl,-R -Wl,$(srcdir) -L$(srcdir) -lconfig
 
 install: all $(srcdir)/libconfig.h
@@ -91,7 +91,7 @@ install: all $(srcdir)/libconfig.h
 	-( cd "$(DESTDIR)$(libdir)" && rm -f libconfig.$(SHOBJEXT) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT) )
 
 clean:
-	rm -f *.o $(BINS) $(LIBS) *~ test-lc$(EXEEXT) *.dll.a *.dll.def *.dll
+	rm -f *.o $(BINS) *~ test-lc$(EXEEXT) *.dll.a *.dll.def *.dll
 
 distclean: clean
 	rm -f Makefile config.h config.status config.log lc_geterrno.3 lc_process.3 lc_cleanup.3 lc_process_file.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 libconfig.3 libconfig.syms
