@@ -24,6 +24,9 @@ automake -fca
 
 rm -rf autom4te.cache
 
+rm -f libconfig.vers
+make -f Makefile.in libconfig.vers
+
 # Add Linux/MUSL support if missing
 if ! grep '[-]musl' config.sub >/dev/null 2>/dev/null; then
 	sed 's@\(-*\)linux-gnu\* @\1linux-musl | &@g' config.sub > config.sub.new

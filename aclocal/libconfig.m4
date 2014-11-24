@@ -50,3 +50,26 @@ AC_DEFUN(DC_ASK_SMALL, [
 		AC_DEFINE(ENABLE_SMALL, [1], [Define to 1 if you want to produce a minimalistic build.])
 	fi
 ])
+
+AC_DEFUN(LC_SET_SONAME, [
+	SAVE_LDFLAGS="$LDFLAGS"
+
+	AC_MSG_CHECKING([how to specify soname])
+
+	for try in "-Wl,--soname,$1" '__fail__'; do
+		LDFLAGS="$SAVE_LDFLAGS"
+
+		if test "${try}" = '__fail__'; then
+			AC_MSG_RESULT([can't])
+
+			break
+		fi
+
+		LDFLAGS="${LDFLAGS} ${try}"
+		AC_TRY_LINK([void TestTest(void) { return; }], [], [
+			AC_MSG_RESULT([$try])
+
+			break
+		])
+	done
+])

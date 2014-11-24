@@ -36,11 +36,14 @@ OBJS = libconfig.o conf_space.o conf_section.o conf_apache.o conf_colon.o conf_e
 SHOBJS = libconfig_shr.o conf_space_shr.o conf_section_shr.o conf_apache_shr.o conf_colon_shr.o conf_equal_shr.o conf_xml_shr.o @SHLIBOBJS@
 
 all: $(LIBS) $(BINS)
-libconfig.$(SHOBJEXT): $(SHOBJS)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $^ $(LDFLAGS)
+
+libconfig.$(SHOBJEXT): $(SHOBJS) libconfig.vers libconfig.syms
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(SHOBJFLAGS) $(SHOBJLDFLAGS) -o $@ $(SHOBJS) $(LDFLAGS)
+	-@WEAKENSYMS@ libconfig.$(SHOBJEXT)
+	-@REMOVESYMS@ libconfig.$(SHOBJEXT)
 
 libconfig.$(AREXT): $(OBJS)
-	$(AR) rcu $@ $^
+	$(AR) rcu $@ $(OBJS)
 	-$(RANLIB) $@
 
 libconfig.o: $(srcdir)/libconfig.c $(srcdir)/compat.h $(srcdir)/win32.h $(srcdir)/config.h libconfig.h
@@ -51,6 +54,15 @@ libconfig_shr.o: $(srcdir)/libconfig.c $(srcdir)/compat.h $(srcdir)/win32.h $(sr
 
 %.o: $(srcdir)/%.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ "$(filter %.c, $^)"
+
+libconfig.vers: libconfig.syms.in
+	rm -f libconfig.vers
+	echo 'LIBCONFIG_0.3.0 {' > '$@'
+	echo '	global:' >> '$@'
+	cat libconfig.syms.in | sed 's/^@SYMPREFIX@//;s/^/		/;s/$$/;/' >> '$@'
+	echo '	local:' >> '$@'
+	echo '		*;' >> '$@'
+	echo '};' >> '$@'
 
 test-lc$(EXEEXT): $(LIBS) $(srcdir)/test-lc.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c, $^) $(LDFLAGS) -Wl,-R -Wl,. -L. -lconfig
@@ -82,7 +94,7 @@ clean:
 	rm -f *.o $(BINS) $(LIBS) *~ test-lc$(EXEEXT) *.dll.a *.dll.def *.dll
 
 distclean: clean
-	rm -f Makefile config.h config.status config.log lc_geterrno.3 lc_process.3 lc_cleanup.3 lc_process_file.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 libconfig.3
+	rm -f Makefile config.h config.status config.log lc_geterrno.3 lc_process.3 lc_cleanup.3 lc_process_file.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 libconfig.3 libconfig.syms
 
 mrproper: distclean
 	rm -f aclocal.m4 config.guess config.sub install-sh configure

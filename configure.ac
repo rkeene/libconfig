@@ -39,7 +39,13 @@ AC_HEADER_TIME
 AC_REPLACE_FUNCS(strsep strtoll getuid)
 AC_CHECK_FUNCS(getpwuid strtof)
 
+dnl Setup stable API
+DC_SETUP_STABLE_API(libconfig.vers, libconfig.syms)
+
+dnl Set a soname
+LC_SET_SONAME([libconfig.so.$PACKAGE_VERSION])
+
 dnl This MUST be last.
 DC_SYNC_SHLIBOBJS
 
-AC_OUTPUT(Makefile lc_geterrno.3 lc_process.3 lc_register_var.3 lc_geterrstr.3 lc_seterrstr.3 lc_register_callback.3 lc_cleanup.3 lc_process_file.3 libconfig.3 lc_handle_type.3)
+AC_OUTPUT(Makefile lc_geterrno.3 lc_process.3 lc_register_var.3 lc_geterrstr.3 lc_seterrstr.3 lc_register_callback.3 lc_cleanup.3 lc_process_file.3 libconfig.3 lc_handle_type.3 libconfig.syms)

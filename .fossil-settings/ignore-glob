@@ -27,3 +27,5 @@ libconfig.so
 test-lc
 test-lc.exe
 test.cfg
+libconfig.vers
+libconfig.syms
