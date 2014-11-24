@@ -3,5 +3,7 @@ Primary Authors:
     Primary maintainer.
 
 People who have submitted patches:
-  * Mirko Buffoni <mirko.buffoni@synthesys.it>
+  * Mirko Buffoni <mirko.buffoni @AT@ synthesys.it>
     Fixed installation issues and corrected mistakes in RPM spec file.
+  * T. Hayfield
+    Fixed issue with lc_process_var_double() handling the wrong type
