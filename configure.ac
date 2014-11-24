@@ -46,7 +46,9 @@ dnl Setup stable API
 DC_SETUP_STABLE_API([${srcdir}/libconfig.vers], libconfig.syms)
 
 dnl Set a soname
-SHOBJ_SET_SONAME([libconfig.$SHOBJEXT.$PACKAGE_VERSION])
+ABI_VERSION='0'
+SHOBJ_SET_SONAME([libconfig.$SHOBJEXT.$ABI_VERSION])
+AC_SUBST(ABI_VERSION)
 
 dnl This MUST be last.
 DC_SYNC_SHLIBOBJS

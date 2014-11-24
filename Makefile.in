@@ -16,7 +16,7 @@ SHOBJEXT = @SHOBJEXT@
 ARFLAGS = # @ARFLAGS@
 AREXT = @AREXT@
 PKGVERS = @PACKAGE_VERSION@
-PKGVERSMAJOR = `echo $(PKGVERS) | cut -f 1 -d .`
+ABI_VERSION = @ABI_VERSION@
 EXEEXT = @EXEEXT@
 LIBS = @LIBS@
 
@@ -65,7 +65,9 @@ $(srcdir)/libconfig.vers: $(srcdir)/libconfig.syms.in
 	echo '};' >> '$@'
 
 test-lc$(EXEEXT): $(BINS) $(srcdir)/test-lc.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c, $^) $(LDFLAGS) -Wl,-R -Wl,$(srcdir) -L$(srcdir) -lconfig
+	rm -f libconfig.$(SHOBJEXT).$(ABI_VERSION)
+	$(LN_S) libconfig.$(SHOBJEXT) libconfig.$(SHOBJEXT).$(ABI_VERSION)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -I$(srcdir) -o $@ $(filter %.c, $^) $(LDFLAGS) -Wl,-R,$(shell pwd) -L$(shell pwd) -lconfig
 
 install: all $(srcdir)/libconfig.h
 	-$(INSTALL) -d "$(DESTDIR)$(mandir)"
@@ -87,11 +89,12 @@ install: all $(srcdir)/libconfig.h
 	$(INSTALL) -m 644 lc_cleanup.3 "$(DESTDIR)$(mandir)/man3/lc_cleanup.3"
 	$(INSTALL) -m 644 libconfig.3 "$(DESTDIR)$(mandir)/man3/libconfig.3"
 	$(INSTALL) -m 644 $(srcdir)/libconfig.h "$(DESTDIR)$(includedir)/libconfig.h"
-	-( cd "$(DESTDIR)$(libdir)" && rm -f libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT).$(PKGVERSMAJOR) )
+	-( cd "$(DESTDIR)$(libdir)" && rm -f libconfig.$(SHOBJEXT).$(ABI_VERSION) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT).$(ABI_VERSION) )
 	-( cd "$(DESTDIR)$(libdir)" && rm -f libconfig.$(SHOBJEXT) && $(LN_S) libconfig.$(SHOBJEXT).$(PKGVERS) libconfig.$(SHOBJEXT) )
 
 clean:
 	rm -f *.o $(BINS) *~ test-lc$(EXEEXT) *.dll.a *.dll.def *.dll
+	rm -f libconfig.$(SHOBJEXT).$(ABI_VERSION)
 
 distclean: clean
 	rm -f Makefile config.h config.status config.log lc_geterrno.3 lc_process.3 lc_cleanup.3 lc_process_file.3 lc_register_var.3 lc_geterrstr.3 lc_register_callback.3 libconfig.3 libconfig.syms

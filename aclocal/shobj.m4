@@ -186,9 +186,14 @@ AC_DEFUN(SHOBJ_SET_SONAME, [
 
 		LDFLAGS="${LDFLAGS} ${try}"
 		AC_TRY_LINK([void TestTest(void) { return; }], [], [
+			LDFLAGS="${SAVE_LDFLAGS}"
+			SHOBJLDFLAGS="${SHOBJLDFLAGS} ${try}"
+
 			AC_MSG_RESULT([$try])
 
 			break
 		])
 	done
+
+	AC_SUBST(SHOBJLDFLAGS)
 ])
