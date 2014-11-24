@@ -56,7 +56,7 @@ AC_DEFUN(LC_SET_SONAME, [
 
 	AC_MSG_CHECKING([how to specify soname])
 
-	for try in "-Wl,--soname,$1" '__fail__'; do
+	for try in "-Wl,--soname,$1" "Wl,-install_name,$1" '__fail__'; do
 		LDFLAGS="$SAVE_LDFLAGS"
 
 		if test "${try}" = '__fail__'; then
