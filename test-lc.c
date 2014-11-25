@@ -51,12 +51,26 @@ int main(int argc, char **argv) {
 	lcpret = lc_process_file("testapp", "test.conf", LC_CONF_APACHE);
 	if (lcpret < 0) {
 		fprintf(stderr, "Error processing config file: %s\n", lc_geterrstr());
+
+		if (joeval != NULL) {
+			free(joeval);
+		}
+
+		lc_cleanup();
+
 		return(EXIT_FAILURE);
 	}
 
 	lcpret = lc_process(argc, argv, "testapp", LC_CONF_APACHE, "test.cfg");
 	if (lcpret < 0) {
 		fprintf(stderr, "Error processing config file: %s\n", lc_geterrstr());
+
+		if (joeval != NULL) {
+			free(joeval);
+		}
+
+		lc_cleanup();
+
 		return(EXIT_FAILURE);
 	}
 
@@ -64,6 +78,8 @@ int main(int argc, char **argv) {
 
 	if (joeval != NULL) {
 		fprintf(stderr, "joeval = \"%s\"\n", joeval);
+
+		free(joeval);
 	} else {
 		fprintf(stderr, "joeval = \"(null)\"\n");
 	}
