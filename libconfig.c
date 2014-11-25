@@ -640,6 +640,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 	if (newargv == NULL) {
 		lc_errfile = local_lc_errfile;
 		lc_errline = local_lc_errline;
+		lc_erroptname = NULL;
 		lc_errno = LC_ERR_ENOMEM;
 		return(-1);
 	}
@@ -651,6 +652,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 	if (usedargv == NULL) {
 		lc_errfile = local_lc_errfile;
 		lc_errline = local_lc_errline;
+		lc_erroptname = NULL;
 		lc_errno = LC_ERR_ENOMEM;
 		free(newargv);
 		return(-1);
@@ -735,8 +737,8 @@ static int lc_process_cmdline(int argc, char **argv) {
 						fprintf(stderr, "Argument required.\n");
 						lc_errfile = local_lc_errfile;
 						lc_errline = local_lc_errline;
-						lc_errno = LC_ERR_BADFORMAT;
 						lc_erroptname = strdup(cmdarg);
+						lc_errno = LC_ERR_BADFORMAT;
 						free(usedargv);
 						free(newargv);
 						return(-1);
@@ -761,6 +763,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 				fprintf(stderr, "Unknown option: --%s\n", cmdarg);
 				lc_errfile = local_lc_errfile;
 				lc_errline = local_lc_errline;
+				lc_erroptname = strdup(cmdarg);
 				lc_errno = LC_ERR_INVCMD;
 				free(usedargv);
 				free(newargv);
@@ -791,6 +794,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 							fprintf(stderr, "Argument required.\n");
 							lc_errfile = local_lc_errfile;
 							lc_errline = local_lc_errline;
+							lc_erroptname = strdup(cmdarg);
 							lc_errno = LC_ERR_BADFORMAT;
 							free(usedargv);
 							free(newargv);
@@ -805,6 +809,7 @@ static int lc_process_cmdline(int argc, char **argv) {
 					if (chkretval < 0) {
 						lc_errfile = local_lc_errfile;
 						lc_errline = local_lc_errline;
+						lc_erroptname = strdup(cmdarg);
 						retval = -1;
 					}
 
@@ -815,6 +820,9 @@ static int lc_process_cmdline(int argc, char **argv) {
 					fprintf(stderr, "Unknown option: -%c\n", ch);
 					lc_errfile = local_lc_errfile;
 					lc_errline = local_lc_errline;
+					lc_erroptname = malloc(2);
+					lc_erroptname[0] = ch;
+					lc_erroptname[1] = '\0';
 					lc_errno = LC_ERR_INVCMD;
 					free(usedargv);
 					free(newargv);
@@ -888,6 +896,7 @@ int lc_process_var(const char *var, const char *varargs, const char *value, lc_f
 		    handler->type != LC_VAR_SECTIONSTART &&
 		    handler->type != LC_VAR_SECTIONEND) {
 			lc_errno = LC_ERR_BADFORMAT;
+			lc_erroptname = NULL;
 			break;
 		}
 
@@ -974,6 +983,7 @@ int lc_process_file(const char *appname, const char *pathname, lc_conf_type_t ty
 		default:
 			chkretval = -1;
 			lc_errno = LC_ERR_INVDATA;
+			lc_erroptname = NULL;
 			break;
 	}
 
@@ -1066,6 +1076,11 @@ void lc_cleanup(void) {
 		free((char *) lc_err_usererrmsg);
 
 		lc_err_usererrmsg = NULL;
+	}
+
+	if (lc_erroptname) {
+		free(lc_erroptname);
+		lc_erroptname = NULL;
 	}
 
 	varhandlers = NULL;
