@@ -22,7 +22,7 @@ for file in lc_cleanup lc_geterrno lc_geterrstr lc_seterrstr lc_process lc_proce
 	(
 		echo '<H2>NAME</H2>'
 		man2html -H linux.die.net -M /man -p "${file}.3" | \
-			sed '0,/<H2>NAME<\/H2>/ d;/<H2>Index<\/H2>/,$ d;s@<A HREF="../index.html">Return to Main Contents</A>@@;s@\[@\&#91;@;s@\]@\&#93;@' | \
+			sed '0,/<H2>NAME<\/H2>/ d;/<H2>Index<\/H2>/,$ d;s@<A HREF="../index.html">Return to Main Contents</A>@@;s@\[@\&#91;@g;s@\]@\&#93;@g' | \
 			sed 's@file:/usr/include/libconfig.h@artifact/'"${LIBCONFIG_H_SHA1}"'@' | \
 			sed '$ d;/^ *$/ d' | \
 			sed 's@\(http://linux.die.net/man/[^+]*\)+@\1/@' | \
